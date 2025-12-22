@@ -15,9 +15,16 @@ interface ImageFile {
   preview: string;
 }
 
+interface TextNote {
+  id: string;
+  content: string;
+  fileName: string;
+}
+
 const Index = () => {
   const [images, setImages] = useState<ImageFile[]>([]);
-  const [textNotes, setTextNotes] = useState<string[]>([]);
+  const [textNotes, setTextNotes] = useState<TextNote[]>([]);
+  const [noteCounter, setNoteCounter] = useState(1);
   const [insights, setInsights] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,12 +55,23 @@ const Index = () => {
   }, []);
 
   const handleTextSubmit = useCallback((text: string) => {
-    setTextNotes((prev) => [...prev, text]);
+    const fileName = `digital_notes_${String(noteCounter).padStart(2, '0')}.txt`;
+    const newNote: TextNote = {
+      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      content: text,
+      fileName,
+    };
+    setTextNotes((prev) => [...prev, newNote]);
+    setNoteCounter((prev) => prev + 1);
     toast({
       title: "Text added",
-      description: "Your text note has been added successfully.",
+      description: `${fileName} has been created successfully.`,
     });
-  }, [toast]);
+  }, [toast, noteCounter]);
+
+  const handleRemoveTextNote = useCallback((id: string) => {
+    setTextNotes((prev) => prev.filter((note) => note.id !== id));
+  }, []);
 
   const handleExtractInsights = async () => {
     if (images.length === 0 && textNotes.length === 0) return;
@@ -119,9 +137,14 @@ const Index = () => {
             <TextInputZone onTextSubmit={handleTextSubmit} />
           </div>
 
-          {/* Image Grid */}
+          {/* Items Grid */}
           <div className="animate-slide-up" style={{ animationDelay: "300ms" }}>
-            <ImageGrid images={images} onRemoveImage={handleRemoveImage} />
+            <ImageGrid 
+              images={images} 
+              textNotes={textNotes}
+              onRemoveImage={handleRemoveImage} 
+              onRemoveTextNote={handleRemoveTextNote}
+            />
           </div>
 
           {/* Extract Button */}
