@@ -13,8 +13,8 @@ export const Navbar = () => {
           <div className="w-10 h-10 rounded-xl bg-[image:var(--gradient-primary)] flex items-center justify-center glow-effect">
             <Sparkles className="w-5 h-5 text-primary-foreground" />
           </div>
-          <span className="font-display text-xl font-bold text-foreground">
-            Image Insight <span className="text-gradient">Extractor</span>
+          <span className="font-display text-xl font-bold text-gradient">
+            Inspectra
           </span>
         </div>
         <Button variant="glass" onClick={scrollToTop}>
