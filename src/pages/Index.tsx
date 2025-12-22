@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { Sparkles, Zap } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { DropZone } from "@/components/DropZone";
+import { TextInputZone } from "@/components/TextInputZone";
 import { ImageGrid } from "@/components/ImageGrid";
 import { InsightsDisplay } from "@/components/InsightsDisplay";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ interface ImageFile {
 
 const Index = () => {
   const [images, setImages] = useState<ImageFile[]>([]);
+  const [textNotes, setTextNotes] = useState<string[]>([]);
   const [insights, setInsights] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,8 +47,16 @@ const Index = () => {
     });
   }, []);
 
+  const handleTextSubmit = useCallback((text: string) => {
+    setTextNotes((prev) => [...prev, text]);
+    toast({
+      title: "Text added",
+      description: "Your text note has been added successfully.",
+    });
+  }, [toast]);
+
   const handleExtractInsights = async () => {
-    if (images.length === 0) return;
+    if (images.length === 0 && textNotes.length === 0) return;
 
     setIsLoading(true);
     setError(null);
@@ -98,9 +108,15 @@ const Index = () => {
       {/* Main Content */}
       <section className="pb-24 px-6">
         <div className="container mx-auto max-w-4xl space-y-8">
-          {/* Upload Zone */}
-          <div className="animate-slide-up" style={{ animationDelay: "200ms" }}>
+          {/* Step 1 Title */}
+          <h2 className="font-display text-xl font-semibold text-foreground">
+            Step 1: Load notes (images or free text)
+          </h2>
+
+          {/* Upload Zones - Side by Side */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-slide-up" style={{ animationDelay: "200ms" }}>
             <DropZone onFilesAdded={handleFilesAdded} />
+            <TextInputZone onTextSubmit={handleTextSubmit} />
           </div>
 
           {/* Image Grid */}
@@ -114,7 +130,7 @@ const Index = () => {
               variant="hero"
               size="xl"
               onClick={handleExtractInsights}
-              disabled={images.length === 0 || isLoading}
+              disabled={(images.length === 0 && textNotes.length === 0) || isLoading}
               className="min-w-[280px]"
             >
               {isLoading ? (
