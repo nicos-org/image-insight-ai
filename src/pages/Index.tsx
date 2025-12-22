@@ -84,9 +84,8 @@ const Index = () => {
             <span className="text-sm font-medium text-primary">AI-Powered Analysis</span>
           </div>
           
-          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-foreground mb-6 animate-slide-up">
-            Extract <span className="text-gradient">Insights</span> from
-            <br />Your Images
+          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 animate-slide-up">
+            Extract <span className="text-gradient">Insights</span> from Your Notes at Swissmedic
           </h1>
           
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-12 animate-slide-up" style={{ animationDelay: "100ms" }}>
@@ -147,7 +146,7 @@ const Index = () => {
       <footer className="py-8 px-6 border-t border-border/50">
         <div className="container mx-auto max-w-4xl text-center">
           <p className="text-sm text-muted-foreground">
-            Image Insight Extractor • Frontend Demo
+            Inspectra • Frontend Demo
           </p>
           <p className="text-xs text-muted-foreground/60 mt-1">
             Connect your Python backend to enable real AI analysis
