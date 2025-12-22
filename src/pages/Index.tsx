@@ -84,7 +84,7 @@ const Index = () => {
             <span className="text-sm font-medium text-primary">AI-Powered Analysis</span>
           </div>
           
-          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 animate-slide-up">
+          <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-6 animate-slide-up">
             Extract <span className="text-gradient">Insights</span> from Your Notes at Swissmedic
           </h1>
           
