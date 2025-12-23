@@ -127,14 +127,16 @@ const Index = () => {
       <section className="pb-24 px-6">
         <div className="container mx-auto max-w-4xl space-y-8">
           {/* Step 1 Title */}
-          <h2 className="font-display text-xl font-semibold text-foreground">
-            Step 1: Load notes (images or free text)
-          </h2>
+          <div className="space-y-4">
+            <h2 className="font-display text-xl font-semibold text-foreground text-left">
+              Step 1: Load notes (images or free text)
+            </h2>
 
-          {/* Upload Zones - Side by Side */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-slide-up" style={{ animationDelay: "200ms" }}>
-            <DropZone onFilesAdded={handleFilesAdded} />
-            <TextInputZone onTextSubmit={handleTextSubmit} />
+            {/* Upload Zones - Side by Side */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-slide-up" style={{ animationDelay: "200ms" }}>
+              <DropZone onFilesAdded={handleFilesAdded} />
+              <TextInputZone onTextSubmit={handleTextSubmit} />
+            </div>
           </div>
 
           {/* Items Grid */}
@@ -147,27 +149,33 @@ const Index = () => {
             />
           </div>
 
-          {/* Extract Button */}
-          <div className="flex justify-center animate-slide-up" style={{ animationDelay: "400ms" }}>
-            <Button
-              variant="hero"
-              size="xl"
-              onClick={handleExtractInsights}
-              disabled={(images.length === 0 && textNotes.length === 0) || isLoading}
-              className="min-w-[280px]"
-            >
-              {isLoading ? (
-                <>
-                  <div className="w-5 h-5 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground spinner" />
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-5 h-5" />
-                  Extract Insights from Images
-                </>
-              )}
-            </Button>
+          {/* Step 2 Title and Extract Button */}
+          <div className="space-y-4">
+            <h2 className="font-display text-xl font-semibold text-foreground text-left">
+              Step 2: Extract insights from already loaded images and free text
+            </h2>
+
+            <div className="flex justify-start animate-slide-up" style={{ animationDelay: "400ms" }}>
+              <Button
+                variant="hero"
+                size="xl"
+                onClick={handleExtractInsights}
+                disabled={(images.length === 0 && textNotes.length === 0) || isLoading}
+                className="min-w-[280px]"
+              >
+                {isLoading ? (
+                  <>
+                    <div className="w-5 h-5 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground spinner" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-5 h-5" />
+                    Extract Insights from Images
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
 
           {/* Insights Display */}
