@@ -155,7 +155,7 @@ const Index = () => {
               Step 2: Extract insights from already loaded images and free text
             </h2>
 
-            <div className="flex justify-start animate-slide-up" style={{ animationDelay: "400ms" }}>
+            <div className="flex justify-center animate-slide-up" style={{ animationDelay: "400ms" }}>
               <Button
                 variant="hero"
                 size="xl"
