@@ -81,12 +81,23 @@ const Index = () => {
     setInsights(null);
 
     try {
-      const result = await analyzeImages(images.map((img) => img.file));
-      setInsights(result);
-      toast({
-        title: "Analysis complete",
-        description: "Your images have been analyzed successfully.",
-      });
+      // Demo mode: if only digital_notes_01.txt is added, display its content directly
+      if (images.length === 0 && textNotes.length === 1 && textNotes[0].fileName === "digital_notes_01.txt") {
+        // Simulate a brief processing delay for demo effect
+        await new Promise(resolve => setTimeout(resolve, 800));
+        setInsights(textNotes[0].content);
+        toast({
+          title: "Demo extraction complete",
+          description: "Text from digital_notes_01.txt has been extracted.",
+        });
+      } else {
+        const result = await analyzeImages(images.map((img) => img.file));
+        setInsights(result);
+        toast({
+          title: "Analysis complete",
+          description: "Your images have been analyzed successfully.",
+        });
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
       setError(errorMessage);
