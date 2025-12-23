@@ -21,11 +21,20 @@ interface TextNote {
   fileName: string;
 }
 
+interface FileInsight {
+  id: string;
+  fileName: string;
+  type: "image" | "text";
+  preview?: string;
+  content: string;
+}
+
 const Index = () => {
   const [images, setImages] = useState<ImageFile[]>([]);
   const [textNotes, setTextNotes] = useState<TextNote[]>([]);
   const [noteCounter, setNoteCounter] = useState(1);
-  const [insights, setInsights] = useState<string | null>(null);
+  const [insights, setInsights] = useState<FileInsight[] | null>(null);
+  const [selectedInsightId, setSelectedInsightId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
@@ -79,25 +88,44 @@ const Index = () => {
     setIsLoading(true);
     setError(null);
     setInsights(null);
+    setSelectedInsightId(null);
 
     try {
-      // Demo mode: if only digital_notes_01.txt is added, display its content directly
-      if (images.length === 0 && textNotes.length === 1 && textNotes[0].fileName === "digital_notes_01.txt") {
-        // Simulate a brief processing delay for demo effect
-        await new Promise(resolve => setTimeout(resolve, 800));
-        setInsights(textNotes[0].content);
-        toast({
-          title: "Demo extraction complete",
-          description: "Text from digital_notes_01.txt has been extracted.",
+      // Simulate a brief processing delay for demo effect
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      const fileInsights: FileInsight[] = [];
+
+      // Add text notes as insights
+      textNotes.forEach((note) => {
+        fileInsights.push({
+          id: note.id,
+          fileName: note.fileName,
+          type: "text",
+          content: note.content,
         });
-      } else {
-        const result = await analyzeImages(images.map((img) => img.file));
-        setInsights(result);
-        toast({
-          title: "Analysis complete",
-          description: "Your images have been analyzed successfully.",
+      });
+
+      // Add images with mock analysis
+      images.forEach((img) => {
+        fileInsights.push({
+          id: img.id,
+          fileName: img.file.name,
+          type: "image",
+          preview: img.preview,
+          content: `[Demo] Analysis of ${img.file.name}: This image contains visual content that would be analyzed by the AI backend.`,
         });
+      });
+
+      setInsights(fileInsights);
+      if (fileInsights.length > 0) {
+        setSelectedInsightId(fileInsights[0].id);
       }
+
+      toast({
+        title: "Analysis complete",
+        description: `${fileInsights.length} file(s) have been analyzed.`,
+      });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
       setError(errorMessage);
@@ -195,6 +223,8 @@ const Index = () => {
               insights={insights}
               isLoading={isLoading}
               error={error}
+              selectedFileId={selectedInsightId}
+              onSelectFile={setSelectedInsightId}
             />
           </div>
         </div>
