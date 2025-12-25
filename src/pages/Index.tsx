@@ -287,7 +287,7 @@ const Index = () => {
             Inspectra • Frontend Demo
           </p>
           <p className="text-xs text-muted-foreground/60 mt-1">
-            Connect your Python backend to enable real AI analysis
+            Developed by Nicolas Perez Gonzalez, Data Scientist at Swissmedic
           </p>
         </div>
       </footer>
