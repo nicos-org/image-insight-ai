@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FileText } from "lucide-react";
 import { Button } from "./ui/button";
+import { toast } from "@/hooks/use-toast";
 
 interface TextInputZoneProps {
   onTextSubmit: (text: string) => void;
@@ -10,10 +11,16 @@ export const TextInputZone = ({ onTextSubmit }: TextInputZoneProps) => {
   const [text, setText] = useState("");
 
   const handleSubmit = () => {
-    if (text.trim()) {
-      onTextSubmit(text.trim());
-      setText("");
+    if (!text.trim()) {
+      toast({
+        title: "Error",
+        description: "In order to submit text, you need to first add some free text in the box",
+        variant: "destructive",
+      });
+      return;
     }
+    onTextSubmit(text.trim());
+    setText("");
   };
 
   return (
@@ -38,7 +45,6 @@ export const TextInputZone = ({ onTextSubmit }: TextInputZoneProps) => {
         variant="hero"
         className="mt-4 w-full"
         onClick={handleSubmit}
-        disabled={!text.trim()}
       >
         Submit text
       </Button>
