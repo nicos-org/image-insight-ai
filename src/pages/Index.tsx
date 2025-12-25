@@ -82,6 +82,14 @@ const Index = () => {
     setTextNotes((prev) => prev.filter((note) => note.id !== id));
   }, []);
 
+  const handleUpdateInsightContent = useCallback((id: string, content: string) => {
+    setInsights((prev) => 
+      prev?.map((insight) => 
+        insight.id === id ? { ...insight, content } : insight
+      ) ?? null
+    );
+  }, []);
+
   const handleExtractInsights = async () => {
     if (images.length === 0 && textNotes.length === 0) return;
 
@@ -225,6 +233,7 @@ const Index = () => {
               error={error}
               selectedFileId={selectedInsightId}
               onSelectFile={setSelectedInsightId}
+              onUpdateContent={handleUpdateInsightContent}
             />
           </div>
         </div>
