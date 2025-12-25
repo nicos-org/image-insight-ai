@@ -245,8 +245,8 @@ const Index = () => {
             </h2>
 
             <Collapsible>
-              <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group">
-                <ChevronDown className="w-4 h-4 transition-transform group-data-[state=open]:rotate-180" />
+              <CollapsibleTrigger className="flex items-center gap-2 text-base font-medium text-muted-foreground hover:text-foreground transition-colors group">
+                <ChevronDown className="w-5 h-5 transition-transform group-data-[state=open]:rotate-180" />
                 Current prompt
               </CollapsibleTrigger>
               <CollapsibleContent className="mt-3">
@@ -257,6 +257,25 @@ const Index = () => {
                 </div>
               </CollapsibleContent>
             </Collapsible>
+
+            <div className="flex justify-center">
+              <Button
+                variant="hero"
+                size="xl"
+                className="min-w-[280px]"
+              >
+                <Sparkles className="w-5 h-5" />
+                Generate summary
+              </Button>
+            </div>
+
+            <div className="glass-card rounded-2xl p-6">
+              <div className="min-h-[150px] rounded-xl bg-muted/50 border border-border p-4 flex items-center justify-center">
+                <p className="text-muted-foreground text-sm text-center">
+                  Once you generate the summary it will be displayed here
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
