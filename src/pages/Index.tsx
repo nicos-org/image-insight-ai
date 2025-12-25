@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
-import { Sparkles, Zap } from "lucide-react";
+import { Sparkles, Zap, ChevronDown } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Navbar } from "@/components/Navbar";
 import { DropZone } from "@/components/DropZone";
 import { TextInputZone } from "@/components/TextInputZone";
@@ -235,6 +236,27 @@ const Index = () => {
               onSelectFile={setSelectedInsightId}
               onUpdateContent={handleUpdateInsightContent}
             />
+          </div>
+
+          {/* Step 3 - Summarize */}
+          <div className="space-y-4 animate-slide-up" style={{ animationDelay: "600ms" }}>
+            <h2 className="font-display text-xl font-semibold text-foreground text-left">
+              Step 3: Summarize all notes into a single document
+            </h2>
+
+            <Collapsible>
+              <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group">
+                <ChevronDown className="w-4 h-4 transition-transform group-data-[state=open]:rotate-180" />
+                Current prompt
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-3">
+                <div className="p-4 rounded-lg border border-border/50 bg-muted/30">
+                  <p className="text-sm text-foreground">
+                    Summarize all files in a single document with a maximum of 500 pages
+                  </p>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
           </div>
         </div>
       </section>
