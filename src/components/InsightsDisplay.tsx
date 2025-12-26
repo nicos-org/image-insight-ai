@@ -59,7 +59,7 @@ export const InsightsDisplay = ({
           <Sparkles className="w-5 h-5 text-primary-foreground" />
         </div>
         <h3 className="font-display text-lg font-semibold text-foreground">
-          AI Insights
+          Extracted insights for every file
         </h3>
       </div>
 
@@ -79,7 +79,7 @@ export const InsightsDisplay = ({
             <p className="text-destructive text-sm text-center">{error}</p>
           </div>
         ) : insights && insights.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in">
+          <div className="space-y-6 animate-fade-in">
             {/* Left Column - File List */}
             <div className="space-y-2">
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">
