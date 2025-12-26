@@ -1,11 +1,7 @@
 import { Sparkles } from "lucide-react";
-import { Button } from "./ui/button";
+import { Link } from "react-router-dom";
 
 export const Navbar = () => {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass-card border-b border-border/50">
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
@@ -17,9 +13,27 @@ export const Navbar = () => {
             Inspectra
           </span>
         </div>
-        <Button variant="glass" onClick={scrollToTop}>
-          Home
-        </Button>
+        
+        <div className="flex items-center gap-8">
+          <Link 
+            to="/" 
+            className="font-display font-medium text-foreground hover:text-primary transition-colors"
+          >
+            Home
+          </Link>
+          <Link 
+            to="/why" 
+            className="font-display font-medium text-foreground hover:text-primary transition-colors"
+          >
+            Why?
+          </Link>
+          <Link 
+            to="/documentation" 
+            className="font-display font-medium text-foreground hover:text-primary transition-colors"
+          >
+            Documentation
+          </Link>
+        </div>
       </div>
     </nav>
   );
