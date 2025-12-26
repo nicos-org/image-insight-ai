@@ -51,7 +51,7 @@ export const DropZone = ({ onFilesAdded }: DropZoneProps) => {
       className={`glass-card rounded-2xl p-8 border transition-all duration-300 h-full flex flex-col ${
         isDragOver
           ? "border-2 border-primary glow-effect scale-[1.01]"
-          : "border-border/50 hover:border-primary/50"
+          : "border-border/50"
       }`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
@@ -70,7 +70,7 @@ export const DropZone = ({ onFilesAdded }: DropZoneProps) => {
         className={`flex-1 flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed p-6 transition-all duration-300 ${
           isDragOver
             ? "border-primary bg-primary/5"
-            : "border-border/50 hover:border-primary/30"
+            : "border-border/50"
         }`}
       >
         <div
