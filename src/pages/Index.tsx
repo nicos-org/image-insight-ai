@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Sparkles, Zap, ChevronDown } from "lucide-react";
+import { Sparkles, Zap, ChevronDown, Pencil, Check } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Navbar } from "@/components/Navbar";
 import { DropZone } from "@/components/DropZone";
@@ -38,6 +38,8 @@ const Index = () => {
   const [selectedInsightId, setSelectedInsightId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [summary, setSummary] = useState("");
+  const [isEditingSummary, setIsEditingSummary] = useState(false);
   const { toast } = useToast();
 
   const handleFilesAdded = useCallback((files: File[]) => {
@@ -270,10 +272,40 @@ const Index = () => {
             </div>
 
             <div className="glass-card rounded-2xl p-6">
-              <div className="min-h-[150px] rounded-xl bg-muted/50 border border-border p-4 flex items-center justify-center">
-                <p className="text-muted-foreground text-sm text-center">
-                  Once you generate the summary it will be displayed here
-                </p>
+              <div className="min-h-[150px] rounded-xl bg-muted/50 border border-border p-4 relative">
+                {summary ? (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute top-2 right-2 h-8 w-8"
+                      onClick={() => setIsEditingSummary(!isEditingSummary)}
+                    >
+                      {isEditingSummary ? (
+                        <Check className="h-4 w-4" />
+                      ) : (
+                        <Pencil className="h-4 w-4" />
+                      )}
+                    </Button>
+                    {isEditingSummary ? (
+                      <textarea
+                        value={summary}
+                        onChange={(e) => setSummary(e.target.value)}
+                        className="w-full h-full min-h-[130px] bg-transparent border-none resize-none focus:outline-none text-foreground text-sm"
+                      />
+                    ) : (
+                      <p className="text-foreground text-sm whitespace-pre-wrap pr-10">
+                        {summary}
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <div className="flex items-center justify-center h-full min-h-[130px]">
+                    <p className="text-muted-foreground text-sm text-center">
+                      Once you generate the summary it will be displayed here
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
