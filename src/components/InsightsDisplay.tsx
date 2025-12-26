@@ -80,87 +80,85 @@ export const InsightsDisplay = ({
           </div>
         ) : insights && insights.length > 0 ? (
           <div className="space-y-6 animate-fade-in">
-            {/* Left Column - File List */}
-            <div className="space-y-2">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">
+            {/* Horizontal Carousel - File Cards */}
+            <div className="space-y-3">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                 Analyzed Files
               </p>
-              <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
+              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
                 {insights.map((item) => (
-                  <div
+                  <button
                     key={item.id}
-                    className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-all ${
+                    onClick={() => onSelectFile(item.id)}
+                    className={`flex-shrink-0 flex flex-col items-center gap-2 p-3 rounded-lg border transition-all min-w-[80px] max-w-[100px] ${
                       selectedInsight?.id === item.id
-                        ? "border-primary bg-primary/10"
+                        ? "border-primary bg-primary/10 ring-2 ring-primary/20"
                         : "border-border/50 bg-background/50 hover:border-border hover:bg-background"
                     }`}
                   >
-                    <button
-                      onClick={() => onSelectFile(item.id)}
-                      className="flex items-center gap-3 flex-1 text-left"
-                    >
-                      {item.type === "image" ? (
-                        item.preview ? (
-                          <img
-                            src={item.preview}
-                            alt={item.fileName}
-                            className="w-10 h-10 rounded-md object-cover"
-                          />
-                        ) : (
-                          <div className="w-10 h-10 rounded-md bg-muted flex items-center justify-center">
-                            <Image className="w-5 h-5 text-muted-foreground" />
-                          </div>
-                        )
+                    {item.type === "image" ? (
+                      item.preview ? (
+                        <img
+                          src={item.preview}
+                          alt={item.fileName}
+                          className="w-12 h-12 rounded-md object-cover"
+                        />
                       ) : (
-                        <div className="w-10 h-10 rounded-md bg-primary/10 flex items-center justify-center">
-                          <FileText className="w-5 h-5 text-primary" />
+                        <div className="w-12 h-12 rounded-md bg-muted flex items-center justify-center">
+                          <Image className="w-6 h-6 text-muted-foreground" />
                         </div>
-                      )}
-                      <span className="text-sm font-medium text-foreground truncate">
-                        {item.fileName}
-                      </span>
-                    </button>
-                    {selectedInsight?.id === item.id && !isEditing && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 shrink-0"
-                        onClick={() => handleStartEdit(item)}
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Button>
+                      )
+                    ) : (
+                      <div className="w-12 h-12 rounded-md bg-primary/10 flex items-center justify-center">
+                        <FileText className="w-6 h-6 text-primary" />
+                      </div>
                     )}
-                  </div>
+                    <span className="text-xs font-medium text-foreground truncate w-full text-center">
+                      {item.fileName}
+                    </span>
+                  </button>
                 ))}
               </div>
             </div>
 
-            {/* Right Column - Extracted Content */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between mb-3">
+            {/* Extracted Content */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                   Extracted Content
                 </p>
-                {isEditing && (
-                  <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1">
+                  {selectedInsight && !isEditing && (
                     <Button
                       variant="ghost"
                       size="icon"
                       className="h-7 w-7"
-                      onClick={handleSaveEdit}
+                      onClick={() => handleStartEdit(selectedInsight)}
                     >
-                      <Check className="w-4 h-4 text-green-500" />
+                      <Pencil className="w-4 h-4" />
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7"
-                      onClick={handleCancelEdit}
-                    >
-                      <X className="w-4 h-4 text-destructive" />
-                    </Button>
-                  </div>
-                )}
+                  )}
+                  {isEditing && (
+                    <>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={handleSaveEdit}
+                      >
+                        <Check className="w-4 h-4 text-green-500" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={handleCancelEdit}
+                      >
+                        <X className="w-4 h-4 text-destructive" />
+                      </Button>
+                    </>
+                  )}
+                </div>
               </div>
               <div className="p-4 rounded-lg border border-border/50 bg-background/50 min-h-[200px] max-h-[300px] overflow-y-auto">
                 {selectedInsight ? (
