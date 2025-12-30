@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Sparkles, Zap, ChevronDown, Pencil, Check } from "lucide-react";
+import { Sparkles, Zap, ChevronDown, Pencil, Check, FileText, FileDown } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Navbar } from "@/components/Navbar";
 import { DropZone } from "@/components/DropZone";
@@ -9,6 +9,9 @@ import { InsightsDisplay } from "@/components/InsightsDisplay";
 import { Button } from "@/components/ui/button";
 import { analyzeImages } from "@/services/mockAnalysis";
 import { useToast } from "@/hooks/use-toast";
+import { jsPDF } from "jspdf";
+import { Document, Packer, Paragraph, TextRun } from "docx";
+import { saveAs } from "file-saver";
 
 interface ImageFile {
   id: string;
@@ -336,6 +339,63 @@ const Index = () => {
                   </div>
                 )}
               </div>
+
+              {/* Export Buttons */}
+              {summary && (
+                <div className="flex justify-center gap-4 mt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      const doc = new jsPDF();
+                      const pageWidth = doc.internal.pageSize.getWidth();
+                      const margin = 20;
+                      const maxWidth = pageWidth - margin * 2;
+                      const lines = doc.splitTextToSize(summary, maxWidth);
+                      doc.setFontSize(12);
+                      doc.text(lines, margin, margin);
+                      doc.save("summary.pdf");
+                      toast({
+                        title: "PDF exported",
+                        description: "Your summary has been downloaded as a PDF.",
+                      });
+                    }}
+                  >
+                    <FileDown className="w-4 h-4 mr-2" />
+                    Export as PDF
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={async () => {
+                      const doc = new Document({
+                        sections: [
+                          {
+                            properties: {},
+                            children: [
+                              new Paragraph({
+                                children: [
+                                  new TextRun({
+                                    text: summary,
+                                    size: 24,
+                                  }),
+                                ],
+                              }),
+                            ],
+                          },
+                        ],
+                      });
+                      const blob = await Packer.toBlob(doc);
+                      saveAs(blob, "summary.docx");
+                      toast({
+                        title: "Word document exported",
+                        description: "Your summary has been downloaded as a Word document.",
+                      });
+                    }}
+                  >
+                    <FileText className="w-4 h-4 mr-2" />
+                    Export as Word
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
