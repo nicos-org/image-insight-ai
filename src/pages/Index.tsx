@@ -40,7 +40,10 @@ const Index = () => {
   const [error, setError] = useState<string | null>(null);
   const [summary, setSummary] = useState("");
   const [isEditingSummary, setIsEditingSummary] = useState(false);
+  const [isSummaryLoading, setIsSummaryLoading] = useState(false);
   const { toast } = useToast();
+
+  const DEMO_FALLBACK_TEXT = "This is the demo text in case some error in the pipeline is happening. No worries! Our engineers are working on it ;)";
 
   const handleFilesAdded = useCallback((files: File[]) => {
     const newImages = files.map((file) => ({
@@ -265,9 +268,35 @@ const Index = () => {
                 variant="hero"
                 size="xl"
                 className="min-w-[280px]"
+                disabled={isSummaryLoading}
+                onClick={async () => {
+                  setIsSummaryLoading(true);
+                  try {
+                    // Simulate API call - replace with actual API call when connected
+                    await new Promise((_, reject) => setTimeout(() => reject(new Error("API not connected")), 1000));
+                  } catch (err) {
+                    // Fallback to demo text on any error
+                    setSummary(DEMO_FALLBACK_TEXT);
+                    toast({
+                      title: "Demo mode",
+                      description: "Showing demo content as the API is not connected.",
+                    });
+                  } finally {
+                    setIsSummaryLoading(false);
+                  }
+                }}
               >
-                <Sparkles className="w-5 h-5" />
-                Generate summary
+                {isSummaryLoading ? (
+                  <>
+                    <div className="w-5 h-5 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground spinner" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-5 h-5" />
+                    Generate summary
+                  </>
+                )}
               </Button>
             </div>
 
