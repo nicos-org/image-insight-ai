@@ -173,8 +173,7 @@ const Index = () => {
           </h1>
           
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-12 animate-slide-up" style={{ animationDelay: "100ms" }}>
-            Upload your images and let our AI analyze them to provide detailed insights,
-            descriptions, and valuable information about your visual content.
+            Upload your images and free text from inspections and let our Inspectra analyze them to provide detailed insights & descriptions for further workflows.
           </p>
         </div>
       </section>
