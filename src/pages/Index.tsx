@@ -182,16 +182,18 @@ const Index = () => {
       <section className="pb-24 px-6">
         <div className="container mx-auto max-w-4xl space-y-8">
           {/* Step 1 Title */}
-          <div className="space-y-4">
-            <h2 className="font-display text-xl font-semibold text-foreground text-left">
-              Step 1: Load notes (images or free text)
-            </h2>
-
-            {/* Upload Zones - Side by Side */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-slide-up" style={{ animationDelay: "200ms" }}>
-              <DropZone onFilesAdded={handleFilesAdded} />
-              <TextInputZone onTextSubmit={handleTextSubmit} />
+          <div className="py-6">
+            <div className="w-full py-4 px-6 rounded-xl bg-primary/10 border border-primary/20">
+              <h2 className="font-display text-2xl font-semibold text-foreground text-center">
+                Step 1: Load notes (images or free text)
+              </h2>
             </div>
+          </div>
+
+          {/* Upload Zones - Side by Side */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-slide-up" style={{ animationDelay: "200ms" }}>
+            <DropZone onFilesAdded={handleFilesAdded} />
+            <TextInputZone onTextSubmit={handleTextSubmit} />
           </div>
 
           {/* Items Grid */}
