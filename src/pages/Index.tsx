@@ -182,7 +182,7 @@ const Index = () => {
       <section className="pb-24 px-6">
         <div className="container mx-auto max-w-4xl space-y-8">
           {/* Step 1 Title */}
-          <div className="py-6">
+          <div className="py-10">
             <div className="w-full py-4 px-6 rounded-xl bg-primary/10 border border-primary/20">
               <h2 className="font-display text-2xl font-semibold text-foreground text-center">
                 Step 1: Load notes (images or free text)
@@ -207,7 +207,7 @@ const Index = () => {
           </div>
 
           {/* Step 2 Title and Extract Button */}
-          <div className="py-6">
+          <div className="py-10">
             <div className="w-full py-4 px-6 rounded-xl bg-primary/10 border border-primary/20">
               <h2 className="font-display text-2xl font-semibold text-foreground text-center">
                 Step 2: Extract insights from already loaded images and free text
@@ -253,7 +253,7 @@ const Index = () => {
           </div>
 
           {/* Step 3 - Summarize */}
-          <div className="py-6">
+          <div className="py-10">
             <div className="w-full py-4 px-6 rounded-xl bg-primary/10 border border-primary/20">
               <h2 className="font-display text-2xl font-semibold text-foreground text-center">
                 Step 3: Summarize all notes into a single document
