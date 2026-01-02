@@ -136,11 +136,11 @@ export const InsightsDisplay = ({
               </TooltipProvider>
             </div>
 
-            {/* Original Text Preview */}
+            {/* Extracted Content Display */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                  Original Text
+                  Extracted Content
                 </p>
                 <div className="flex items-center gap-1">
                   {selectedInsight && !isEditing && (
@@ -186,7 +186,7 @@ export const InsightsDisplay = ({
                     />
                   ) : (
                     <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
-                      {selectedInsight.originalText || selectedInsight.content}
+                      {selectedInsight.content}
                     </p>
                   )
                 ) : (
