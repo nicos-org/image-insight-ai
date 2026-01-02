@@ -31,6 +31,7 @@ interface FileInsight {
   type: "image" | "text";
   preview?: string;
   content: string;
+  originalText?: string;
 }
 
 const Index = () => {
@@ -120,6 +121,7 @@ const Index = () => {
           fileName: note.fileName,
           type: "text",
           content: note.content,
+          originalText: note.content,
         });
       });
 
@@ -131,6 +133,7 @@ const Index = () => {
           type: "image",
           preview: img.preview,
           content: `[Demo] Analysis of ${img.file.name}: This image contains visual content that would be analyzed by the AI backend.`,
+          originalText: `[Image: ${img.file.name}]`,
         });
       });
 
