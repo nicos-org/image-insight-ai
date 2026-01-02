@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { Sparkles, AlertCircle, FileText, Image, Pencil, Check, X } from "lucide-react";
 import { Button } from "./ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
 
 interface FileInsight {
   id: string;
@@ -8,6 +14,7 @@ interface FileInsight {
   type: "image" | "text";
   preview?: string;
   content: string;
+  originalText?: string;
 }
 
 interface InsightsDisplayProps {
@@ -85,47 +92,55 @@ export const InsightsDisplay = ({
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                 Analyzed Files
               </p>
-              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
-                {insights.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => onSelectFile(item.id)}
-                    className={`flex-shrink-0 flex flex-col items-center gap-2 p-3 rounded-lg border transition-all min-w-[80px] max-w-[100px] ${
-                      selectedInsight?.id === item.id
-                        ? "border-primary bg-primary/10 ring-2 ring-primary/20"
-                        : "border-border/50 bg-background/50 hover:border-border hover:bg-background"
-                    }`}
-                  >
-                    {item.type === "image" ? (
-                      item.preview ? (
-                        <img
-                          src={item.preview}
-                          alt={item.fileName}
-                          className="w-12 h-12 rounded-md object-cover"
-                        />
-                      ) : (
-                        <div className="w-12 h-12 rounded-md bg-muted flex items-center justify-center">
-                          <Image className="w-6 h-6 text-muted-foreground" />
-                        </div>
-                      )
-                    ) : (
-                      <div className="w-12 h-12 rounded-md bg-primary/10 flex items-center justify-center">
-                        <FileText className="w-6 h-6 text-primary" />
-                      </div>
-                    )}
-                    <span className="text-xs font-medium text-foreground truncate w-full text-center">
-                      {item.fileName}
-                    </span>
-                  </button>
-                ))}
-              </div>
+              <TooltipProvider>
+                <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
+                  {insights.map((item) => (
+                    <Tooltip key={item.id}>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => onSelectFile(item.id)}
+                          className={`flex-shrink-0 flex flex-col items-center gap-2 p-3 rounded-lg border transition-all min-w-[80px] max-w-[100px] ${
+                            selectedInsight?.id === item.id
+                              ? "border-primary bg-primary/10 ring-2 ring-primary/20"
+                              : "border-border/50 bg-background/50 hover:border-border hover:bg-background"
+                          }`}
+                        >
+                          {item.type === "image" ? (
+                            item.preview ? (
+                              <img
+                                src={item.preview}
+                                alt={item.fileName}
+                                className="w-12 h-12 rounded-md object-cover"
+                              />
+                            ) : (
+                              <div className="w-12 h-12 rounded-md bg-muted flex items-center justify-center">
+                                <Image className="w-6 h-6 text-muted-foreground" />
+                              </div>
+                            )
+                          ) : (
+                            <div className="w-12 h-12 rounded-md bg-primary/10 flex items-center justify-center">
+                              <FileText className="w-6 h-6 text-primary" />
+                            </div>
+                          )}
+                          <span className="text-xs font-medium text-foreground truncate w-full text-center">
+                            {item.fileName}
+                          </span>
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{item.fileName}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ))}
+                </div>
+              </TooltipProvider>
             </div>
 
-            {/* Extracted Content */}
+            {/* Original Text Preview */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                  Extracted Content
+                  Original Text
                 </p>
                 <div className="flex items-center gap-1">
                   {selectedInsight && !isEditing && (
@@ -171,7 +186,7 @@ export const InsightsDisplay = ({
                     />
                   ) : (
                     <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
-                      {selectedInsight.content}
+                      {selectedInsight.originalText || selectedInsight.content}
                     </p>
                   )
                 ) : (
