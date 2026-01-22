@@ -49,7 +49,7 @@ const fileToBase64 = (file: File): Promise<string> => {
 };
 
 /**
- * Analyze an image using GPT-4 Vision
+ * Analyze an image using GPT-4 Vision -> here we have the objective of extract text/content from the image
  */
 const analyzeImage = async (imageFile: File, fileName: string): Promise<string> => {
   const openai = getOpenAIClient();
@@ -67,7 +67,30 @@ const analyzeImage = async (imageFile: File, fileName: string): Promise<string> 
           content: [
             {
               type: "text",
-              text: "Analyze this image and provide detailed insights about its content, focusing on visual elements, composition, and key observations relevant to inspection notes. Provide a comprehensive analysis in a clear, structured format."
+              text: `You are an expert at extracting and transcribing text from images of handwritten or printed notes. 
+    The images may vary in quality, lighting conditions, paper colors, contrast levels, and writing styles.
+
+    Your task is to:
+    1. Extract all visible text from the image, preserving the original structure and formatting as much as possible.
+
+    2. For unclear or ambiguous words:
+       - If you can reasonably infer what the word likely is based on context, write the inferred word followed by alternative possibilities in square brackets, like: "word[alternative1/alternative2]"
+       - If a word is too unclear to infer a single likely option, provide multiple plausible alternatives that fit the sentence pattern and context, separated by slashes within square brackets, like: "[option1/option2/option3]"
+       - Always consider the surrounding text context and sentence structure when suggesting alternatives
+
+    3. Language support: The notes may be written in English, German, French, or Italian. Identify the language(s) used and transcribe accordingly. Do not assume the text is in English.
+
+    4. Acronyms and capitalized text: Preserve ALL acronyms, abbreviations, and words written in CAPITAL LETTERS exactly as they appear in the image. Do not convert them to lowercase or modify their capitalization.
+
+    5. Provide a clear, structured transcription that maintains the original layout and organization of the notes when possible.
+
+    IMPORTANT OUTPUT FORMAT:
+    - Return ONLY the transcribed text content directly
+    - Do NOT include any introductory sentences, explanations, or prefacing text
+    - Do NOT write phrases like "Here's the transcription", "The text reads:", "Here's what I found:", or any similar introductory statements
+    - Start immediately with the actual transcribed text from the image
+
+    Extract all text from this image following these guidelines.`
             },
             {
               type: "image_url",
@@ -204,7 +227,7 @@ export const generateSummary = async (insights: FileInsight[]): Promise<string> 
 
   // Combine all insights into a single text
   const allInsightsText = insights.map((insight, index) => {
-    return `--- File ${index + 1}: ${insight.fileName} (${insight.type}) ---\n${insight.content}\n`;
+    return `--- Source ${index + 1}: ${insight.fileName} (${insight.type === 'image' ? 'transcribed from image' : 'text note'}) ---\n${insight.content}\n`;
   }).join('\n');
 
   try {
@@ -213,7 +236,7 @@ export const generateSummary = async (insights: FileInsight[]): Promise<string> 
       messages: [
         {
           role: "user",
-          content: `Summarize all the following insights into a single comprehensive document with a maximum of 500 pages. Organize the content logically and ensure all key points are included. Provide a well-structured summary that captures the essential information from all files:\n\n${allInsightsText}`
+          content: `You are summarizing transcribed text content that has been extracted from images and text notes. The filenames below (like "image-4.png") are just organizational labels - you are working with TEXT TRANSCRIPTIONS that have already been extracted, NOT image files to view. All content below is plain text that has been transcribed from the original sources.\n\nSummarize all the following transcribed text content into a single comprehensive document with a maximum of 500 pages. Organize the content logically and ensure all key points are included. Provide a well-structured summary that captures the essential information from all transcriptions:\n\n${allInsightsText}`
         }
       ],
       max_tokens: 2000
