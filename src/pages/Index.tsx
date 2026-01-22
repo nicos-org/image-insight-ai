@@ -7,6 +7,13 @@ import { TextInputZone } from "@/components/TextInputZone";
 import { ImageGrid } from "@/components/ImageGrid";
 import { InsightsDisplay } from "@/components/InsightsDisplay";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { analyzeFiles, generateSummary } from "@/services/openaiService";
 import { useToast } from "@/hooks/use-toast";
 import { jsPDF } from "jspdf";
@@ -45,6 +52,7 @@ const Index = () => {
   const [summary, setSummary] = useState("");
   const [isEditingSummary, setIsEditingSummary] = useState(false);
   const [isSummaryLoading, setIsSummaryLoading] = useState(false);
+  const [summaryLanguage, setSummaryLanguage] = useState<string>("german");
   const { toast } = useToast();
 
   const DEMO_FALLBACK_TEXT = "This is the demo text in case some error in the pipeline is happening. No worries! Our engineers are working on it ;)";
@@ -254,11 +262,11 @@ const Index = () => {
               </CollapsibleContent>
             </Collapsible>
 
-            <div className="flex justify-center">
+            <div className="flex items-center justify-start gap-4 flex-nowrap">
               <Button
                 variant="hero"
                 size="xl"
-                className="min-w-[280px]"
+                className="w-[280px] flex-shrink-0"
                 disabled={isSummaryLoading}
                 onClick={async () => {
                   if (!insights || insights.length === 0) {
@@ -272,7 +280,7 @@ const Index = () => {
 
                   setIsSummaryLoading(true);
                   try {
-                    const summaryText = await generateSummary(insights);
+                    const summaryText = await generateSummary(insights, summaryLanguage);
                     setSummary(summaryText);
                     toast({
                       title: "Summary generated",
@@ -303,6 +311,21 @@ const Index = () => {
                   </>
                 )}
               </Button>
+              
+              <div className="flex items-center gap-3 flex-shrink-0 ml-auto">
+                <span className="text-sm text-muted-foreground whitespace-nowrap">summary language:</span>
+                <Select value={summaryLanguage} onValueChange={setSummaryLanguage}>
+                  <SelectTrigger className="w-[140px] flex-shrink-0">
+                    <SelectValue placeholder="Select language" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="english">English</SelectItem>
+                    <SelectItem value="german">German</SelectItem>
+                    <SelectItem value="french">French</SelectItem>
+                    <SelectItem value="italian">Italian</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="glass-card rounded-2xl p-6">
