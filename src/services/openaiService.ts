@@ -162,27 +162,15 @@ export const analyzeFiles = async (
   const insights: FileInsight[] = [];
 
   try {
-    // Process text notes
+    // Process text notes - use content directly without ChatGPT processing
     for (const note of textNotes) {
-      try {
-        const analysis = await analyzeText(note.content);
-        insights.push({
-          id: note.id,
-          fileName: note.fileName,
-          type: "text",
-          content: analysis,
-          originalText: note.content,
-        });
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Failed to analyze text';
-        insights.push({
-          id: note.id,
-          fileName: note.fileName,
-          type: "text",
-          content: `Error analyzing text: ${errorMessage}`,
-          originalText: note.content,
-        });
-      }
+      insights.push({
+        id: note.id,
+        fileName: note.fileName,
+        type: "text",
+        content: note.content,
+        originalText: note.content,
+      });
     }
 
     // Process images in parallel for better performance
@@ -224,21 +212,54 @@ export const analyzeFiles = async (
  */
 const getSummaryPrompt = (language: string): string => {
   const prompts: Record<string, string> = {
-    english: `You are summarizing transcribed text content that has been extracted from images and text notes. The filenames below (like "image-4.png") are just organizational labels - you are working with TEXT TRANSCRIPTIONS that have already been extracted, NOT image files to view. All content below is plain text that has been transcribed from the original sources.
+    english: `You are summarizing transcribed text content that has been extracted from images and 
+             text notes. The filenames below (like "image-4.png") are just organizational labels - you 
+             are working with TEXT TRANSCRIPTIONS that have already been extracted, NOT image files to 
+             view. All content below is plain text that has been transcribed from the original sources.
 
-Summarize all the following transcribed text content into a single comprehensive document with a maximum of 500 pages. Organize the content logically and ensure all key points are included. Provide a well-structured summary that captures the essential information from all transcriptions. IMPORTANT: Generate the entire summary in English.`,
+             Summarize all the following transcribed text content into a single comprehensive document 
+             with a maximum of 1000 words. Organize the content logically and ensure all key points are 
+             included. Provide a well-structured summary that captures the essential information from 
+             all transcriptions. Keep it brief. Do not add additional comments other than the summary. 
+             No recommendations to the user. IMPORTANT: Generate the entire summary in English.`,
 
-    german: `Sie fassen transkribierten Textinhalt zusammen, der aus Bildern und Textnotizen extrahiert wurde. Die Dateinamen unten (wie "image-4.png") sind nur organisatorische Bezeichnungen - Sie arbeiten mit TEXT-TRANSKRIPTIONEN, die bereits extrahiert wurden, NICHT mit Bilddateien zum Ansehen. Der gesamte Inhalt unten ist Klartext, der aus den ursprünglichen Quellen transkribiert wurde.
+    german: `Sie fassen transkribierten Textinhalt zusammen, der aus Bildern und Textnotizen extrahiert 
+            wurde. Die Dateinamen unten (wie "image-4.png") sind nur organisatorische Bezeichnungen - 
+            Sie arbeiten mit TEXT-TRANSKRIPTIONEN, die bereits extrahiert wurden, NICHT mit Bilddateien 
+            zum Ansehen. Der gesamte Inhalt unten ist Klartext, der aus den ursprünglichen Quellen 
+            transkribiert wurde.
 
-Fassen Sie den gesamten folgenden transkribierten Textinhalt in einem einzigen umfassenden Dokument mit maximal 500 Seiten zusammen. Organisieren Sie den Inhalt logisch und stellen Sie sicher, dass alle wichtigen Punkte enthalten sind. Stellen Sie eine gut strukturierte Zusammenfassung bereit, die die wesentlichen Informationen aus allen Transkriptionen erfasst. WICHTIG: Generieren Sie die gesamte Zusammenfassung auf Deutsch.`,
+            Fassen Sie den gesamten folgenden transkribierten Textinhalt in einem einzigen umfassenden 
+            Dokument mit maximal 1000 Wörtern zusammen. Organisieren Sie den Inhalt logisch und stellen 
+            Sie sicher, dass alle wichtigen Punkte enthalten sind. Stellen Sie eine gut strukturierte 
+            Zusammenfassung bereit, die die wesentlichen Informationen aus allen Transkriptionen 
+            erfasst. Halten Sie es kurz. Fügen Sie keine zusätzlichen Kommentare außer der Zusammenfassung 
+            hinzu. Keine Empfehlungen an den Benutzer. WICHTIG: Generieren Sie die gesamte Zusammenfassung auf Deutsch.`,
 
-    french: `Vous résumez du contenu textuel transcrit qui a été extrait d'images et de notes textuelles. Les noms de fichiers ci-dessous (comme "image-4.png") ne sont que des étiquettes organisationnelles - vous travaillez avec des TRANSCRIPTIONS DE TEXTE qui ont déjà été extraites, PAS avec des fichiers image à visualiser. Tout le contenu ci-dessous est du texte brut qui a été transcrit à partir des sources originales.
+    french: `Vous résumez du contenu textuel transcrit qui a été extrait d'images et de notes 
+            textuelles. Les noms de fichiers ci-dessous (comme "image-4.png") ne sont que des étiquettes 
+            organisationnelles - vous travaillez avec des TRANSCRIPTIONS DE TEXTE qui ont déjà été 
+            extraites, PAS avec des fichiers image à visualiser. Tout le contenu ci-dessous est du 
+            texte brut qui a été transcrit à partir des sources originales.
 
-Résumez tout le contenu textuel transcrit suivant en un seul document complet avec un maximum de 500 pages. Organisez le contenu de manière logique et assurez-vous que tous les points clés sont inclus. Fournissez un résumé bien structuré qui capture les informations essentielles de toutes les transcriptions. IMPORTANT : Générez l'intégralité du résumé en français.`,
+            Résumez tout le contenu textuel transcrit suivant en un seul document complet avec un 
+            maximum de 1000 mots. Organisez le contenu de manière logique et assurez-vous que tous 
+            les points clés sont inclus. Fournissez un résumé bien structuré qui capture les 
+            informations essentielles de toutes les transcriptions. Soyez concis. N'ajoutez pas de 
+            commentaires supplémentaires autres que le résumé. Aucune recommandation à l'utilisateur. 
+            IMPORTANT : Générez l'intégralité du résumé en français.`,
 
-    italian: `Stai riassumendo contenuti testuali trascritti che sono stati estratti da immagini e note testuali. I nomi dei file qui sotto (come "image-4.png") sono solo etichette organizzative - stai lavorando con TRASCRIZIONI DI TESTO che sono già state estratte, NON con file immagine da visualizzare. Tutto il contenuto qui sotto è testo semplice che è stato trascritto dalle fonti originali.
+    italian: `Stai riassumendo contenuti testuali trascritti che sono stati estratti da immagini e 
+            note testuali. I nomi dei file qui sotto (come "image-4.png") sono solo etichette 
+            organizzative - stai lavorando con TRASCRIZIONI DI TESTO che sono già state estratte, NON 
+            con file immagine da visualizzare. Tutto il contenuto qui sotto è testo semplice che è 
+            stato trascritto dalle fonti originali.
 
-Riassumi tutto il seguente contenuto testuale trascritto in un unico documento completo con un massimo di 500 pagine. Organizza il contenuto in modo logico e assicurati che tutti i punti chiave siano inclusi. Fornisci un riassunto ben strutturato che catturi le informazioni essenziali da tutte le trascrizioni. IMPORTANTE: Genera l'intero riassunto in italiano.`
+            Riassumi tutto il seguente contenuto testuale trascritto in un unico documento completo con 
+            un massimo di 1000 parole. Organizza il contenuto in modo logico e assicurati che tutti i 
+            punti chiave siano inclusi. Fornisci un riassunto ben strutturato che catturi le informazioni 
+            essenziali da tutte le trascrizioni. Sii conciso. Non aggiungere commenti aggiuntivi oltre al 
+            riassunto. Nessuna raccomandazione all'utente. IMPORTANTE: Genera l'intero riassunto in italiano.`,
   };
 
   return prompts[language.toLowerCase()] || prompts.english;
