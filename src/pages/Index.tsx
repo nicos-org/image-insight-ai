@@ -7,7 +7,7 @@ import { TextInputZone } from "@/components/TextInputZone";
 import { ImageGrid } from "@/components/ImageGrid";
 import { InsightsDisplay } from "@/components/InsightsDisplay";
 import { Button } from "@/components/ui/button";
-import { analyzeImages } from "@/services/mockAnalysis";
+import { analyzeFiles, generateSummary } from "@/services/openaiService";
 import { useToast } from "@/hooks/use-toast";
 import { jsPDF } from "jspdf";
 import { Document, Packer, Paragraph, TextRun } from "docx";
@@ -109,33 +109,7 @@ const Index = () => {
     setSelectedInsightId(null);
 
     try {
-      // Simulate a brief processing delay for demo effect
-      await new Promise(resolve => setTimeout(resolve, 800));
-
-      const fileInsights: FileInsight[] = [];
-
-      // Add text notes as insights
-      textNotes.forEach((note) => {
-        fileInsights.push({
-          id: note.id,
-          fileName: note.fileName,
-          type: "text",
-          content: note.content,
-          originalText: note.content,
-        });
-      });
-
-      // Add images with mock analysis
-      images.forEach((img) => {
-        fileInsights.push({
-          id: img.id,
-          fileName: img.file.name,
-          type: "image",
-          preview: img.preview,
-          content: `[Demo] Analysis of ${img.file.name}: This image contains visual content that would be analyzed by the AI backend.`,
-          originalText: `[Image: ${img.file.name}]`,
-        });
-      });
+      const fileInsights = await analyzeFiles(images, textNotes);
 
       setInsights(fileInsights);
       if (fileInsights.length > 0) {
@@ -287,16 +261,30 @@ const Index = () => {
                 className="min-w-[280px]"
                 disabled={isSummaryLoading}
                 onClick={async () => {
+                  if (!insights || insights.length === 0) {
+                    toast({
+                      title: "No insights available",
+                      description: "Please extract insights first before generating a summary.",
+                      variant: "destructive",
+                    });
+                    return;
+                  }
+
                   setIsSummaryLoading(true);
                   try {
-                    // Simulate API call - replace with actual API call when connected
-                    await new Promise((_, reject) => setTimeout(() => reject(new Error("API not connected")), 1000));
+                    const summaryText = await generateSummary(insights);
+                    setSummary(summaryText);
+                    toast({
+                      title: "Summary generated",
+                      description: "Your summary has been generated successfully.",
+                    });
                   } catch (err) {
-                    // Fallback to demo text on any error
+                    const errorMessage = err instanceof Error ? err.message : "Failed to generate summary";
                     setSummary(DEMO_FALLBACK_TEXT);
                     toast({
-                      title: "Demo mode",
-                      description: "Showing demo content as the API is not connected.",
+                      title: "Summary generation failed",
+                      description: errorMessage,
+                      variant: "destructive",
                     });
                   } finally {
                     setIsSummaryLoading(false);
