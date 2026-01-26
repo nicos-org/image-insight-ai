@@ -163,9 +163,9 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Main Content */}
-      <section className="pb-24 px-6">
-        <div className="container mx-auto max-w-4xl space-y-8">
+      {/* Step 1: Load Notes */}
+      <section className="bg-card py-16 px-6">
+        <div className="container mx-auto max-w-4xl">
           {/* Step 1 Title */}
           <div className="py-10">
             <div className="w-full py-4 px-6 rounded-xl bg-primary/10 border border-primary/20">
@@ -182,7 +182,7 @@ const Index = () => {
           </div>
 
           {/* Items Grid */}
-          <div className="animate-slide-up" style={{ animationDelay: "300ms" }}>
+          <div className="mt-8 animate-slide-up" style={{ animationDelay: "300ms" }}>
             <ImageGrid 
               images={images} 
               textNotes={textNotes}
@@ -190,10 +190,15 @@ const Index = () => {
               onRemoveTextNote={handleRemoveTextNote}
             />
           </div>
+        </div>
+      </section>
 
-          {/* Step 2 Title and Extract Button */}
+      {/* Step 2: Extract Insights */}
+      <section className="bg-primary/10 py-16 px-16">
+        <div className="container mx-auto max-w-4xl">
+          {/* Step 2 Title */}
           <div className="py-10">
-            <div className="w-full py-4 px-6 rounded-xl bg-primary/10 border border-primary/20">
+            <div className="w-full py-4 px-6 rounded-xl bg-primary/20 border border-primary/30">
               <h2 className="font-display text-2xl font-semibold text-foreground text-center">
                 Step 2: Extract insights from already loaded images and free text
               </h2>
@@ -201,7 +206,6 @@ const Index = () => {
           </div>
 
           <div className="space-y-4">
-
             <div className="flex justify-center animate-slide-up" style={{ animationDelay: "400ms" }}>
               <Button
                 variant="hero"
@@ -224,20 +228,25 @@ const Index = () => {
               </Button>
             </div>
           </div>
+        </div>
 
-          {/* Insights Display */}
-          <div className="animate-slide-up" style={{ animationDelay: "500ms" }}>
-            <InsightsDisplay
-              insights={insights}
-              isLoading={isLoading}
-              error={error}
-              selectedFileId={selectedInsightId}
-              onSelectFile={setSelectedInsightId}
-              onUpdateContent={handleUpdateInsightContent}
-            />
-          </div>
+        {/* Insights Display */}
+        <div className="w-full max-w-[calc(100vw-12rem)] mx-auto animate-slide-up mt-8" style={{ animationDelay: "500ms" }}>
+          <InsightsDisplay
+            insights={insights}
+            isLoading={isLoading}
+            error={error}
+            selectedFileId={selectedInsightId}
+            onSelectFile={setSelectedInsightId}
+            onUpdateContent={handleUpdateInsightContent}
+          />
+        </div>
+      </section>
 
-          {/* Step 3 - Summarize */}
+      {/* Step 3: Summarize */}
+      <section className="bg-muted/20 py-16 px-6">
+        <div className="container mx-auto max-w-4xl">
+          {/* Step 3 Title */}
           <div className="py-10">
             <div className="w-full py-4 px-6 rounded-xl bg-primary/10 border border-primary/20">
               <h2 className="font-display text-2xl font-semibold text-foreground text-center">
@@ -247,7 +256,6 @@ const Index = () => {
           </div>
 
           <div className="space-y-4 animate-slide-up" style={{ animationDelay: "600ms" }}>
-
             <Collapsible>
               <CollapsibleTrigger className="flex items-center gap-2 text-base font-medium text-muted-foreground hover:text-foreground transition-colors group">
                 <ChevronDown className="w-5 h-5 transition-transform group-data-[state=open]:rotate-180" />

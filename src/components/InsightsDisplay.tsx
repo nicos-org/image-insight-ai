@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Sparkles, AlertCircle, FileText, Image, Pencil, Check, X } from "lucide-react";
+import { Sparkles, AlertCircle, FileText, Image, Pencil, Check, X, FileInput } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   Tooltip,
@@ -7,6 +7,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from "./ui/resizable";
 
 interface FileInsight {
   id: string;
@@ -58,6 +63,8 @@ export const InsightsDisplay = ({
   };
 
   const isEditing = editingId === selectedInsight?.id;
+
+  const isDigitalNotes = (fileName: string) => fileName.startsWith("digital_notes");
 
   return (
     <div className="glass-card rounded-2xl p-6">
@@ -136,64 +143,244 @@ export const InsightsDisplay = ({
               </TooltipProvider>
             </div>
 
-            {/* Extracted Content Display */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
+            {/* Extracted Content Display - Resizable Panels (Desktop) / Stacked (Mobile) */}
+            {/* Desktop: Resizable Panels */}
+            <div className="hidden lg:block min-h-[600px]">
+              <ResizablePanelGroup direction="horizontal">
+                {/* Left Panel - Currently Selected Image/Text */}
+                <ResizablePanel defaultSize={50} minSize={30} maxSize={70}>
+                  <div className="h-full flex flex-col space-y-3 pr-3">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      Currently Selected Image/Text
+                    </p>
+                    <div className={`flex-1 p-4 rounded-lg border border-border/50 bg-background/50 min-h-[300px] overflow-y-auto ${
+                      selectedInsight?.type === "image" && selectedInsight?.preview 
+                        ? "flex items-center justify-center" 
+                        : ""
+                    }`}>
+                      {selectedInsight ? (
+                        isDigitalNotes(selectedInsight.fileName) ? (
+                          <div className="flex flex-col items-center justify-center gap-3 h-full min-h-[200px]">
+                            <div className="w-16 h-16 rounded-md bg-primary/10 flex items-center justify-center">
+                              <FileInput className="w-8 h-8 text-primary" />
+                            </div>
+                            <p className="text-muted-foreground text-sm text-center">
+                              no need to extract text from digital notes - see right panel
+                            </p>
+                          </div>
+                        ) : selectedInsight.type === "image" ? (
+                          selectedInsight.preview ? (
+                            <img
+                              src={selectedInsight.preview}
+                              alt={selectedInsight.fileName}
+                              className="w-full h-auto max-h-full object-contain rounded-md"
+                            />
+                          ) : (
+                            <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                              <div className="w-16 h-16 rounded-md bg-muted flex items-center justify-center">
+                                <Image className="w-8 h-8 text-muted-foreground" />
+                              </div>
+                              <p className="text-sm">Image preview not available</p>
+                            </div>
+                          )
+                        ) : (
+                          <div className="w-full">
+                            <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
+                              {selectedInsight.originalText || "No original text available"}
+                            </p>
+                          </div>
+                        )
+                      ) : (
+                        <div className="flex items-center justify-center h-full min-h-[200px]">
+                          <p className="text-muted-foreground text-sm text-center">
+                            Select a file to view its original content.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </ResizablePanel>
+                
+                <ResizableHandle withHandle />
+                
+                {/* Right Panel - Extracted Content */}
+                <ResizablePanel defaultSize={50} minSize={30} maxSize={70}>
+                  <div className="h-full flex flex-col space-y-3 pl-3">
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                        Extracted Content
+                      </p>
+                      <div className="flex items-center gap-1">
+                        {selectedInsight && !isEditing && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7"
+                            onClick={() => handleStartEdit(selectedInsight)}
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                        )}
+                        {isEditing && (
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7"
+                              onClick={handleSaveEdit}
+                            >
+                              <Check className="w-4 h-4 text-green-500" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7"
+                              onClick={handleCancelEdit}
+                            >
+                              <X className="w-4 h-4 text-destructive" />
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex-1 p-4 rounded-lg border border-border/50 bg-background/50 min-h-[300px] overflow-y-auto">
+                      {selectedInsight ? (
+                        isEditing ? (
+                          <textarea
+                            value={editContent}
+                            onChange={(e) => setEditContent(e.target.value)}
+                            className="w-full h-full min-h-[180px] bg-transparent text-foreground text-sm leading-relaxed resize-none focus:outline-none"
+                            autoFocus
+                          />
+                        ) : (
+                          <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
+                            {selectedInsight.content}
+                          </p>
+                        )
+                      ) : (
+                        <p className="text-muted-foreground text-sm">
+                          Select a file to view its extracted content.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            </div>
+
+            {/* Mobile: Stacked Layout */}
+            <div className="lg:hidden space-y-6">
+              {/* Left Panel - Currently Selected Image/Text */}
+              <div className="space-y-3">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                  Extracted Content
+                  Currently Selected Image/Text
                 </p>
-                <div className="flex items-center gap-1">
-                  {selectedInsight && !isEditing && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7"
-                      onClick={() => handleStartEdit(selectedInsight)}
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </Button>
-                  )}
-                  {isEditing && (
-                    <>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7"
-                        onClick={handleSaveEdit}
-                      >
-                        <Check className="w-4 h-4 text-green-500" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7"
-                        onClick={handleCancelEdit}
-                      >
-                        <X className="w-4 h-4 text-destructive" />
-                      </Button>
-                    </>
+                <div className={`p-4 rounded-lg border border-border/50 bg-background/50 min-h-[200px] max-h-[400px] overflow-y-auto ${
+                  selectedInsight?.type === "image" && selectedInsight?.preview 
+                    ? "flex items-center justify-center" 
+                    : ""
+                }`}>
+                  {selectedInsight ? (
+                    isDigitalNotes(selectedInsight.fileName) ? (
+                      <div className="flex flex-col items-center justify-center gap-3 h-full min-h-[200px]">
+                        <div className="w-16 h-16 rounded-md bg-primary/10 flex items-center justify-center">
+                          <FileInput className="w-8 h-8 text-primary" />
+                        </div>
+                        <p className="text-muted-foreground text-sm text-center">
+                          no need to extract text from digital notes - see right panel
+                        </p>
+                      </div>
+                    ) : selectedInsight.type === "image" ? (
+                      selectedInsight.preview ? (
+                        <img
+                          src={selectedInsight.preview}
+                          alt={selectedInsight.fileName}
+                          className="w-full h-auto max-h-[400px] object-contain rounded-md"
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                          <div className="w-16 h-16 rounded-md bg-muted flex items-center justify-center">
+                            <Image className="w-8 h-8 text-muted-foreground" />
+                          </div>
+                          <p className="text-sm">Image preview not available</p>
+                        </div>
+                      )
+                    ) : (
+                      <div className="w-full">
+                        <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
+                          {selectedInsight.originalText || "No original text available"}
+                        </p>
+                      </div>
+                    )
+                  ) : (
+                    <div className="flex items-center justify-center h-full min-h-[200px]">
+                      <p className="text-muted-foreground text-sm text-center">
+                        Select a file to view its original content.
+                      </p>
+                    </div>
                   )}
                 </div>
               </div>
-              <div className="p-4 rounded-lg border border-border/50 bg-background/50 min-h-[200px] max-h-[300px] overflow-y-auto">
-                {selectedInsight ? (
-                  isEditing ? (
-                    <textarea
-                      value={editContent}
-                      onChange={(e) => setEditContent(e.target.value)}
-                      className="w-full h-full min-h-[180px] bg-transparent text-foreground text-sm leading-relaxed resize-none focus:outline-none"
-                      autoFocus
-                    />
-                  ) : (
-                    <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
-                      {selectedInsight.content}
-                    </p>
-                  )
-                ) : (
-                  <p className="text-muted-foreground text-sm">
-                    Select a file to view its extracted content.
+
+              {/* Right Panel - Extracted Content */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    Extracted Content
                   </p>
-                )}
+                  <div className="flex items-center gap-1">
+                    {selectedInsight && !isEditing && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => handleStartEdit(selectedInsight)}
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                    )}
+                    {isEditing && (
+                      <>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7"
+                          onClick={handleSaveEdit}
+                        >
+                          <Check className="w-4 h-4 text-green-500" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7"
+                          onClick={handleCancelEdit}
+                        >
+                          <X className="w-4 h-4 text-destructive" />
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className="p-4 rounded-lg border border-border/50 bg-background/50 min-h-[200px] max-h-[400px] overflow-y-auto">
+                  {selectedInsight ? (
+                    isEditing ? (
+                      <textarea
+                        value={editContent}
+                        onChange={(e) => setEditContent(e.target.value)}
+                        className="w-full h-full min-h-[180px] bg-transparent text-foreground text-sm leading-relaxed resize-none focus:outline-none"
+                        autoFocus
+                      />
+                    ) : (
+                      <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
+                        {selectedInsight.content}
+                      </p>
+                    )
+                  ) : (
+                    <p className="text-muted-foreground text-sm">
+                      Select a file to view its extracted content.
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
