@@ -48,14 +48,15 @@ const fileToBase64 = (file: File): Promise<string> => {
   });
 };
 
+const VALID_LANGUAGES = ['german', 'english', 'french', 'italian'] as const;
+
 /**
- * Analyze an image using GPT-4 Vision -> here we have the objective of extract text/content from the image
+ * Detect the dominant language of handwritten content in an image.
+ * Returns a normalized language string or "unknown" on failure.
  */
-const analyzeImage = async (imageFile: File, fileName: string): Promise<string> => {
+const detectDominantLanguage = async (imageFile: File): Promise<string> => {
   const openai = getOpenAIClient();
   const base64Image = await fileToBase64(imageFile);
-  
-  // Remove data URL prefix if present (OpenAI accepts both formats)
   const imageUrl = base64Image.startsWith('data:') ? base64Image : `data:image/jpeg;base64,${base64Image}`;
 
   try {
@@ -67,57 +68,163 @@ const analyzeImage = async (imageFile: File, fileName: string): Promise<string> 
           content: [
             {
               type: "text",
-              text: `You are an expert at extracting and transcribing text from images of handwritten or printed notes. 
-            The images may vary in quality, lighting conditions, paper colors, contrast levels, and writing styles.
+              text: `Look at this image of handwritten notes. Determine the dominant language of the text (one of: german, english, french, italian). Other languages (DE, EN, FR, IT) may appear briefly in the document.
 
-            Your task is to:
-            1. Extract all visible text from the image, preserving the original structure and formatting as much as possible.
+Reply with exactly one line in this format:
+DOMINANT_LANGUAGE: <language>
 
-            2. For unclear or ambiguous words:
-               - If you can reasonably infer what the word likely is based on context, write the inferred word followed by alternative possibilities 
-               in square brackets, like: "word[alternative1/alternative2]"
-               - If a word is too unclear to infer a single likely option, provide multiple plausible alternatives that fit the sentence pattern 
-               and context, separated by slashes within square brackets, like: "[option1/option2/option3]"
-               - Always consider the surrounding text context and sentence structure when suggesting alternatives
-
-            3. Language support: The notes may be written in English, German, French, or Italian. Identify the language(s) used and transcribe 
-            accordingly. Do not assume the text is in English.
-
-            4. Acronyms and capitalized text: Preserve ALL acronyms, abbreviations, and words written in CAPITAL LETTERS exactly as they appear 
-            in the image. Do not convert them to lowercase or modify their capitalization.
-
-            5. Provide a clear, structured transcription that maintains the original layout and organization of the notes when possible.
-
-            IMPORTANT OUTPUT FORMAT:
-            - Return ONLY the transcribed text content directly
-            - Do NOT include any introductory sentences, explanations, or prefacing text
-            - Do NOT write phrases like "Here's the transcription", "The text reads:", "Here's what I found:", or any similar introductory statements
-            - Start immediately with the actual transcribed text from the image
-
-            Extract all text from this image following these guidelines.`
+Example: DOMINANT_LANGUAGE: german`
             },
             {
               type: "image_url",
-              image_url: {
-                url: imageUrl
-              }
+              image_url: { url: imageUrl }
             }
           ]
         }
       ],
-      max_tokens: 1000
+      max_tokens: 100
     });
 
-    const content = response.choices[0]?.message?.content;
-    if (!content) {
-      throw new Error('No response content from OpenAI');
-    }
-    return content;
+    const content = response.choices[0]?.message?.content?.trim() ?? '';
+    const match = content.match(/DOMINANT_LANGUAGE:\s*(\w+)/i);
+    const lang = match ? match[1].toLowerCase() : '';
+    return VALID_LANGUAGES.includes(lang as typeof VALID_LANGUAGES[number]) ? lang : 'unknown';
+  } catch {
+    return 'unknown';
+  }
+};
+
+/**
+ * Base transcription instructions shared by all variants, with dominant language injected.
+ */
+const getTranscriptionPrompt = (variant: 'A' | 'B' | 'C', dominantLanguage: string): string => {
+  const languageInstruction =
+    dominantLanguage === 'unknown'
+      ? 'The document may be in one or more of: German, English, French, Italian. Transcribe each part in its language.'
+      : `The main language of this document is ${dominantLanguage}. Transcribe in that language; short phrases may also appear in DE, EN, FR, IT.`;
+
+  const base = `You are an expert at extracting and transcribing text from images of handwritten or printed notes.
+${languageInstruction}
+
+Preserve ALL acronyms, abbreviations, and words in CAPITAL LETTERS exactly as they appear.
+Return ONLY the transcribed text. Do NOT include any introductory sentences. Start immediately with the actual transcribed text.`;
+
+  const variantInstructions = {
+    A: `Prioritize accuracy. Transcribe only what you can read with high confidence. For ambiguous characters/words use [alt1/alt2]. Preserve layout and line breaks.`,
+    B: `Transcribe everything visible, including unclear parts; give your best guess and mark uncertainty with [alt1/alt2] where needed. Preserve structure.`,
+    C: `Preserve the exact layout, line breaks, indentation, and sections. Transcribe all text; use [word1/word2] for ambiguous words.`
+  };
+
+  return `${base}\n\n${variantInstructions[variant]}\n\nExtract all text from this image following these guidelines.`;
+};
+
+/**
+ * Transcribe an image with one of three prompt variants (A: accuracy, B: completeness, C: structure).
+ */
+const transcribeImageVariant = async (
+  imageFile: File,
+  variant: 'A' | 'B' | 'C',
+  dominantLanguage: string
+): Promise<string> => {
+  const openai = getOpenAIClient();
+  const base64Image = await fileToBase64(imageFile);
+  const imageUrl = base64Image.startsWith('data:') ? base64Image : `data:image/jpeg;base64,${base64Image}`;
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o",
+    messages: [
+      {
+        role: "user",
+        content: [
+          { type: "text", text: getTranscriptionPrompt(variant, dominantLanguage) },
+          { type: "image_url", image_url: { url: imageUrl } }
+        ]
+      }
+    ],
+    max_tokens: 1500
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) throw new Error('No response content from OpenAI');
+  return content;
+};
+
+/**
+ * Judge: merge three transcriptions into one final text using the image to resolve ambiguities.
+ * For very unclear words, output [word1, word2, word3] for the user to choose.
+ */
+const judgeTranscriptions = async (
+  transcriptions: [string, string, string],
+  imageFile: File,
+  dominantLanguage: string
+): Promise<string> => {
+  const openai = getOpenAIClient();
+  const base64Image = await fileToBase64(imageFile);
+  const imageUrl = base64Image.startsWith('data:') ? base64Image : `data:image/jpeg;base64,${base64Image}`;
+
+  const [t1, t2, t3] = transcriptions;
+  const textContent = `You are given three transcriptions of the same handwritten image. The notes describe a single inspection (one scenario). Produce one final transcription that is consistent and describes that one scenario.
+
+Use the image to resolve ambiguities where the three versions disagree. For words that remain very unclear (no clarity from the image or agreement between versions), output alternatives in exactly this format: [word1, word2, word3] for the user to choose.
+
+Preserve layout and structure. Main language: ${dominantLanguage}.
+
+Return ONLY the final transcribed text. Do NOT include any introductory sentences. Start immediately with the actual text.
+
+--- Transcription 1 ---
+${t1}
+
+--- Transcription 2 ---
+${t2}
+
+--- Transcription 3 ---
+${t3}`;
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o",
+    messages: [
+      {
+        role: "user",
+        content: [
+          { type: "text", text: textContent },
+          { type: "image_url", image_url: { url: imageUrl } }
+        ]
+      }
+    ],
+    max_tokens: 2000
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) throw new Error('No response content from OpenAI');
+  return content;
+};
+
+/**
+ * Orchestrate the 5-step pipeline: detect language, 3 transcriptions in parallel, then judge.
+ */
+const analyzeImageWithEnsemble = async (imageFile: File, _fileName: string): Promise<string> => {
+  let dominantLanguage: string;
+  try {
+    dominantLanguage = await detectDominantLanguage(imageFile);
   } catch (error) {
-    if (error instanceof OpenAI.APIError) {
-      throw new Error(`OpenAI API error: ${error.message}`);
-    }
-    throw error;
+    throw new Error(`Language detection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+
+  let t1: string, t2: string, t3: string;
+  try {
+    [t1, t2, t3] = await Promise.all([
+      transcribeImageVariant(imageFile, 'A', dominantLanguage),
+      transcribeImageVariant(imageFile, 'B', dominantLanguage),
+      transcribeImageVariant(imageFile, 'C', dominantLanguage)
+    ]);
+  } catch (error) {
+    throw new Error(`Transcription failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+
+  try {
+    return await judgeTranscriptions([t1, t2, t3], imageFile, dominantLanguage);
+  } catch (error) {
+    throw new Error(`Judge step failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 };
 
@@ -176,7 +283,7 @@ export const analyzeFiles = async (
     // Process images in parallel for better performance
     const imagePromises = images.map(async (img) => {
       try {
-        const analysis = await analyzeImage(img.file, img.file.name);
+        const analysis = await analyzeImageWithEnsemble(img.file, img.file.name);
         return {
           id: img.id,
           fileName: img.file.name,

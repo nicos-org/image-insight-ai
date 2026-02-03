@@ -1,9 +1,14 @@
 import { Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
-export const Navbar = () => {
+interface NavbarProps {
+  className?: string;
+}
+
+export const Navbar = ({ className }: NavbarProps) => {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 glass-card border-b border-border/50">
+    <nav className={cn("fixed top-0 left-0 right-0 z-50 glass-card border-b border-border/50", className)}>
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-[image:var(--gradient-primary)] flex items-center justify-center glow-effect">
@@ -32,6 +37,12 @@ export const Navbar = () => {
             className="font-display font-medium text-foreground hover:text-primary transition-colors"
           >
             Documentation
+          </Link>
+          <Link 
+            to="/education" 
+            className="font-display font-medium text-foreground hover:text-primary transition-colors"
+          >
+            Education
           </Link>
         </div>
       </div>
