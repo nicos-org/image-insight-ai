@@ -1,0 +1,19 @@
+Betrieb: Organoid-Herstellungslabor
+ Produkt: 3D-Zellkulturen (F&amp;E / translational)
+ GMP/GxP-Relevanz: ja
+ Zellquellen:
+o Primärzellen
+o Herkunft beschrieben
+o Spenderdokumentation nicht geprüft
+ Rohmaterialien:
+o Matrix / Wachstumsfaktoren
+o Lieferantenqualifizierung noch prüfen
+ Prozesskontrollen:
+o Inkubation (Temp, CO₂, Feuchte)
+o Elektronische Aufzeichnung
+o Datenintegrität nicht bewertet
+ Reinigung / Desinfektion:
+o SOP vorhanden
+o Ausführungsnachweise nicht eingesehen
+ Aktuell keine bestätigten Abweichungen
+o Vertiefte Dokumentenprüfung erforderlich

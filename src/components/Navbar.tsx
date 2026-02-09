@@ -27,6 +27,12 @@ export const Navbar = ({ className }: NavbarProps) => {
             Home
           </Link>
           <Link 
+            to="/test" 
+            className="font-display font-medium text-foreground hover:text-primary transition-colors"
+          >
+            Test
+          </Link>
+          <Link 
             to="/why" 
             className="font-display font-medium text-foreground hover:text-primary transition-colors"
           >

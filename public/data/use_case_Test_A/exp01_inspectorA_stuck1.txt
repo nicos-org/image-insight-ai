@@ -1,0 +1,10 @@
+Flüssighandhabungsgerät im Formulierungsbereich begutachtet (automatisches
+Pipettiersystem). Gerät wird laut Bediener routinemäßig zur Herstellung und
+Abfüllung von Pufferlösungen verwendet. Allgemeiner Zustand wirkt gepflegt.
+Reinigungsverfahren laut Aussage durch SOP geregelt, jedoch konnten
+Reinigungsprotokolle vor Ort nicht eingesehen werden. Kalibrierkennzeichnung am
+Gerät vorhanden, Kalibrierzertifikat während der Begehung nicht geprüft. Software
+zur Volumensteuerung angeblich validiert, entsprechende Validierungsunterlagen
+jedoch nicht vorgelegt. Möglicher GMP-relevanter Punkt bei fehlender
+Nachvollziehbarkeit von Reinigung, Kalibrierung und Softwarevalidierung. Keine
+eindeutige Abweichung festgestellt, weitere Prüfung erforderlich.

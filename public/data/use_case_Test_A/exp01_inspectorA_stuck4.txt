@@ -1,0 +1,13 @@
+Flüssighandhabungsgerät – Formulierung
+→ täglicher Einsatz
+→ direkter Prozesskontakt
+Reinigung → SOP vorhanden
+☐ letzter Reinigungsnachweis gesehen? nein
+Kalibrierung → Kennzeichnung ok
+☐ Zertifikat geprüft? nein
+Software → automatische Dosierung
+→ Validierung durch QA angegeben
+☐ Unterlagen vorgelegt? heute nicht
+Gesamteindruck: technisch kontrolliert
+Mögliche Schwachstelle: Dokumentation / Nachvollziehbarkeit
+kein Befund – Follow-up erforderlich

@@ -1,0 +1,11 @@
+Herstellungsbereich für Organoide (3D-Zellkulturen) besichtigt. Prozess umfasst
+Isolation von Primärzellen, Expansion und Differenzierung in Matrigel-ähnlicher
+Matrix. GMP-Relevanz gegeben, da Material für präklinische und ggf. klinische
+Anwendungen vorgesehen ist. Chargendokumentation grundsätzlich vorhanden,
+jedoch nicht alle Prozessschritte während der Begehung nachvollziehbar.
+Insbesondere Inkubationsparameter (Zeit, Temperatur, CO₂) werden elektronisch
+überwacht, Datenintegrität der Systeme wurde heute nicht geprüft.
+Rückverfolgbarkeit der eingesetzten Rohmaterialien (Matrix, Wachstumsfaktoren)
+grundsätzlich beschrieben, Lieferantenzertifikate jedoch nicht eingesehen. Keine
+eindeutige Nichtkonformität festgestellt, jedoch potenzieller Klärungsbedarf bei
+Dokumentation und Datenintegrität.

@@ -1,0 +1,18 @@
+Flüssighandhabungsgerät (LHD-03) im Einsatz
+ Verwendung: Dosierung von Hilfsstofflösungen
+ GMP-Relevanz: ja (Produktkontakt)
+ Reinigung:
+o SOP vorhanden
+o Durchführungsnachweise nicht geprüft
+ Kalibrierung:
+o Kalibrieraufkleber vorhanden
+o Zertifikat nicht vorgelegt
+ Software:
+o Automatische Volumensteuerung
+o Validierung laut Betreiber vorhanden
+o Nachweise noch zu prüfen
+ Wartung:
+o Präventive Wartung erwähnt
+o Wartungslogbuch nicht gesehen
+ Aktuell keine bestätigte Nichtkonformität
+ Dokumentenprüfung notwendig

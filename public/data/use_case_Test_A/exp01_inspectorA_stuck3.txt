@@ -1,0 +1,10 @@
+Flüssighandhabung
+GMP-relevant ✔
+Produktkontakt ✔
+Reinigung SOP ✔ / Protokolle ?
+Kalibrierung Label ✔ / Zert. ?
+Software validiert ?
+Volumenprüfung freq ?
+Wartung Log ?
+Risiko = Dokumentation
+später prüfen

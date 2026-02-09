@@ -1,0 +1,4 @@
+exp01_inspectorA_stuck1.png
+exp01_inspectorA_stuck2.png
+exp01_inspectorA_stuck3.png
+exp01_inspectorA_stuck4.png
