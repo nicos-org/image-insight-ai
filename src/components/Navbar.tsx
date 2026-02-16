@@ -1,12 +1,14 @@
+import { ReactNode } from "react";
 import { Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 interface NavbarProps {
   className?: string;
+  actions?: ReactNode;
 }
 
-export const Navbar = ({ className }: NavbarProps) => {
+export const Navbar = ({ className, actions }: NavbarProps) => {
   return (
     <nav className={cn("fixed top-0 left-0 right-0 z-50 glass-card border-b border-border/50", className)}>
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
@@ -50,6 +52,7 @@ export const Navbar = ({ className }: NavbarProps) => {
           >
             Education
           </Link>
+          {actions}
         </div>
       </div>
     </nav>

@@ -89,6 +89,34 @@
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
+  .education-light {
+    color: hsl(var(--foreground));
+    --background: 0 0% 100%;
+    --foreground: 0 0% 9%;
+    --card: 0 0% 97%;
+    --card-foreground: 0 0% 9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 9%;
+    --primary: 348 83% 47%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 348 30% 90%;
+    --secondary-foreground: 348 60% 30%;
+    --muted: 0 0% 94%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 348 50% 92%;
+    --accent-foreground: 348 70% 35%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 85%;
+    --input: 0 0% 75%;
+    --ring: 348 83% 47%;
+
+    --gradient-background: linear-gradient(180deg, hsl(0 0% 98%) 0%, hsl(0 0% 96%) 50%, hsl(0 0% 94%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(0 0% 97%) 100%);
+    --shadow-card: 0 8px 32px hsl(0 0% 0% / 0.08);
+    --shadow-glow: 0 0 40px hsl(348 83% 47% / 0.15);
+  }
 }
 
 @layer base {

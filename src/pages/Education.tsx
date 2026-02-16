@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { NavLink } from "@/components/NavLink";
+import { NavLink } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   ResizablePanelGroup,
@@ -12,12 +12,16 @@ import {
 } from "@/components/ui/resizable";
 import { educationArticles } from "@/content/educationArticles";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/components/education/ThemeToggle";
 
 const EDUCATION_STORAGE_KEY = "education_unlocked";
+const EDUCATION_THEME_KEY = "education_theme";
 const DEFAULT_PASSWORD = "inspectra2025";
 
 const getExpectedPassword = () =>
   import.meta.env.VITE_EDUCATION_PASSWORD ?? DEFAULT_PASSWORD;
+
+type EduTheme = "dark" | "light";
 
 const Education = () => {
   const [unlocked, setUnlocked] = useState(
@@ -25,6 +29,17 @@ const Education = () => {
   );
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [eduTheme, setEduTheme] = useState<EduTheme>(
+    () => (localStorage.getItem(EDUCATION_THEME_KEY) as EduTheme) || "dark"
+  );
+
+  const handleToggleTheme = () => {
+    setEduTheme((prev) => {
+      const next = prev === "dark" ? "light" : "dark";
+      localStorage.setItem(EDUCATION_THEME_KEY, next);
+      return next;
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,8 +58,15 @@ const Education = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black flex flex-col">
-      <Navbar className="!bg-black text-white [&_a]:!text-white [&_a]:hover:!text-white/90" />
+    <div
+      className={cn(
+        "min-h-screen bg-background flex flex-col",
+        eduTheme === "light" && "education-light"
+      )}
+    >
+      <Navbar
+        actions={<ThemeToggle theme={eduTheme} onToggle={handleToggleTheme} />}
+      />
 
       {unlocked ? (
         <>
@@ -54,9 +76,9 @@ const Education = () => {
               className="flex-1 min-h-0"
             >
               <ResizablePanel defaultSize={25} minSize={20} maxSize={40}>
-                <div className="flex flex-col h-full border-r border-border/50 bg-black">
+                <div className="flex flex-col h-full border-r border-border/50 bg-background">
                   <div className="flex items-center justify-between gap-2 p-4 border-b border-border/50 shrink-0">
-                    <span className="font-display font-semibold text-white">
+                    <span className="font-display font-semibold">
                       Articles
                     </span>
                     <Button variant="outline" size="sm" onClick={handleLogout}>
@@ -73,8 +95,8 @@ const Education = () => {
                             cn(
                               "block rounded-md px-3 py-2 text-sm font-medium transition-colors",
                               isActive
-                                ? "bg-accent text-white"
-                                : "text-white/80 hover:bg-accent/50 hover:text-white"
+                                ? "bg-accent font-semibold"
+                                : "hover:bg-accent/50"
                             )
                           }
                         >
@@ -87,7 +109,7 @@ const Education = () => {
               </ResizablePanel>
               <ResizableHandle withHandle />
               <ResizablePanel defaultSize={75} minSize={50}>
-                <div className="h-full overflow-hidden p-6 md:p-8 bg-black">
+                <div className="h-full overflow-hidden p-6 md:p-8 bg-background">
                   <Outlet />
                 </div>
               </ResizablePanel>
@@ -124,10 +146,10 @@ const Education = () => {
 
       <footer className="border-t border-border/50 py-6 shrink-0">
         <div className="container mx-auto px-6 text-center">
-          <p className="text-sm text-white">
+          <p className="text-sm">
             Inspectra • Frontend Demo
           </p>
-          <p className="text-xs text-white/70 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Developed by Nicolas Perez Gonzalez, Data Scientist at Swissmedic
           </p>
         </div>

@@ -13,9 +13,9 @@ export const ArticleBody = ({ content, className, components }: ArticleBodyProps
   return (
     <div
       className={cn(
-        "prose prose-lg prose-invert max-w-prose mx-auto text-white",
-        "prose-headings:font-display prose-headings:font-semibold prose-headings:text-white",
-        "prose-p:text-white prose-p:leading-relaxed prose-p:mb-5 prose-li:text-white prose-a:text-white prose-strong:text-white prose-blockquote:text-white prose-code:text-white prose-td:text-white prose-th:text-white",
+        "prose prose-lg max-w-prose mx-auto",
+        "prose-headings:font-display prose-headings:font-semibold",
+        "prose-p:leading-relaxed prose-p:mb-5",
         className
       )}
     >
