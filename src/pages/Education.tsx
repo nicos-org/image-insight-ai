@@ -21,7 +21,7 @@ const DEFAULT_PASSWORD = "inspectra2025";
 const getExpectedPassword = () =>
   import.meta.env.VITE_EDUCATION_PASSWORD ?? DEFAULT_PASSWORD;
 
-type EduTheme = "dark" | "light";
+export type EduTheme = "dark" | "light";
 
 const Education = () => {
   const [unlocked, setUnlocked] = useState(
@@ -110,7 +110,7 @@ const Education = () => {
               <ResizableHandle withHandle />
               <ResizablePanel defaultSize={75} minSize={50}>
                 <div className="h-full overflow-hidden p-6 md:p-8 bg-background">
-                  <Outlet />
+                  <Outlet context={{ eduTheme }} />
                 </div>
               </ResizablePanel>
             </ResizablePanelGroup>

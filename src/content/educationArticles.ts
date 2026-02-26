@@ -8,11 +8,19 @@ export const educationArticles: EducationArticle[] = [
   {
     id: "chatgpt-like-app-gmp-environments",
     title: "Understanding a ChatGPT-like App in GMP Environments – Do We Care?",
-    content: `## Introduction
+    content: `## Backlog Plan Items
+
+7. In the section **How to Recognize a ChatGPT-like Application** under **Natural Language Chat Interface**, add a rendered chat-like message bubble at the bottom with: "What where the last batch's autoclave Parameters?".
+8. Under **Human-like Responses**, append rendered chat-like message bubbles at the end of the paragraph with:
+   - "what were the last batch's autoclave Parameters?"
+   - "Great question! The last batch's autoclave Parameters were P=1ATM; T=145 C; time=35 minutes, would you like me to adjust These Parameters?"
+9. Under **Flexibility in Queries**, append a rendered chat-like message bubble with "what was the Temperatur profile on Feb 2nd?" and then include an embedded mock SQL code section that demonstrates how the data would be pulled from an imaginary table.
+
+## Introduction
 
 ChatGPT and similar AI chatbots have burst onto the scene in recent years, proving their ability to generate 
 human-like responses and handle complex questions. But can such a language model find a place on a Good
-Manufacturing Practice (GMP) shop floor? If you're a GMP inspector or quality professional 
+Manufacturing Practice (GMP)? If you're a GMP inspector or quality professional 
 (at Swissmedic, FDA, EMA, or elsewhere), you might soon encounter an operator chatting with a machine to 
 retrieve data or guidance. 
 
@@ -31,14 +39,18 @@ amounts of text, which gives them an almost uncanny ability to produce fluent, c
 When you interact with ChatGPT, you're seeing an LM complete your sentences or answer questions based on patterns 
 it learned from vast data. 
 
-https://medium.com/data-science-at-microsoft/how-large-language-models-work-91c362f5b78f 
+> [!WARNING]
+> Importantly, language models don't "think" or retrieve information the way a database or search engine does – they generate responses by statistical prediction. This means they can produce information that sounds convincing.
 
-Importantly, language models don't "think" or retrieve information the way a database or search engine does 
-– they generate responses by statistical prediction. This means they can produce information that sounds convincing. 
+[Deep Dive: How Large Language Models Work](https://medium.com/data-science-at-microsoft/how-large-language-models-work-91c362f5b78f)
+
 In many applications, LMs are used as sub-components: for instance, a helpdesk chatbot that answers user queries, 
 or a document assistant that summarizes reports. In a GMP software context, an LM might be integrated to allow 
 users to query equipment data or SOPs in natural language. The LM is typically one part of a larger application 
 (with a user interface, business logic, databases, etc.), rather than a stand-alone system.
+
+> [!WARNING]
+> Depending on the complexity of the Task given to the Language Model (LM) or Large Language Model (LLM) is how we estimate risk on the Task. Not only do we Account for the complexity of the Task, but also how was this developed. Is this an isolated component that can be thoroughly tested? or is this in the middle of a larger piece of software. This also influence our estimation of Risk.
 
 ## How to Recognize a ChatGPT-like Application
 
@@ -51,6 +63,8 @@ assistant character on a machine's screen likely involves an LM. Unlike traditio
 or form fields), an LM-driven interface invites open-ended questions ("What were the last batch's autoclave parameters?") 
 and provides elaborate textual answers.
 
+> [!CHAT] What where the last batch's autoclave Parameters?
+
 - **Human-like Responses:** If the system gives detailed, well-phrased explanations or instructions that read like a person 
 wrote them (rather than just displaying raw data or error codes), there's probably a language model behind it. LMs can 
 paraphrase information, provide summaries, and even inject a conversational tone. This is distinct from a simple query 
@@ -58,10 +72,23 @@ tool or report, which would typically just fetch exact values or pre-written lin
 completed 20 cycles last week, all within the validated temperature range," whereas a traditional system might show a table 
 of cycle data and leave the interpretation to the user.
 
+> [!CHAT] what were the last batch's autoclave Parameters?
+> [!CHAT_REPLY] Great question! The last batch's autoclave Parameters were P=1ATM; T=145 C; time=35 minutes, would you like me to adjust These Parameters?
+
 - **Flexibility in Queries:** Language models can handle a variety of inputs – you might notice the system doesn't require 
 exact commands. Whether you ask "Show me yesterday's autoclave readings" or "What was the temperature profile on Feb 2nd?" 
 you get a sensible answer. Such flexibility (understanding different phrasings) suggests an LM is interpreting the intent 
 behind your words, rather than a simple keyword search.
+
+> [!CHAT] what was the Temperatur profile on Feb 2nd?
+
+~~~sql
+-- Mock SQL query to retrieve February 2nd autoclave temperature profile
+SELECT recorded_at, temperature_c
+FROM autoclave_temperature_profile
+WHERE DATE(recorded_at) = '2026-02-02'
+ORDER BY recorded_at ASC;
+~~~
 
 - **AI or Assistant Branding:** Sometimes the presence of an LM is hinted by branding or naming. Terms like "AI Assistant," 
 "Powered by AI," "Chatbot," or even a cutesy name for the assistant (e.g. "Smart QA Helper") in the application are strong 
@@ -89,13 +116,17 @@ model-driven application. As inspectors, recognizing this is the first step to e
 ## Why Should Regulators Care About LMs in GMP?
 
 You might wonder: if an AI chatbot is just answering questions, not actually manufacturing anything, is it really a GMP 
-compliance concern? **Absolutely.** Any tool that assists in making decisions or handling GMP data can impact product 
+compliance concern? **Absolutely.**
+
+Any tool that assists in making decisions or handling GMP data can impact product 
 quality and patient safety, so it falls under regulatory expectations for control and validation. Regulators worldwide 
 have started paying close attention to artificial intelligence in regulated industries. In fact, the European Medicines 
 Agency (EMA) and PIC/S have drafted new guidelines (e.g. a proposed Annex 22) specifically addressing AI in GMP, covering 
 aspects like defining the model's intended use, ensuring quality of training data, validating performance, and maintaining 
 human oversight. In other words, the rules are evolving, but the direction is clear: if you use an AI in GMP, you must 
-manage it with the same rigor as any other critical system. Even before explicit AI guidelines are finalized, existing 
+manage it with the same rigor as any other critical system.
+
+Even before explicit AI guidelines are finalized, existing 
 computerized system regulations and data integrity principles already apply. For example, FDA's 21 CFR Part 11 and EU 
 Annex 11 require that electronic records and software used in GMP processes are trustworthy and reliable. This includes 
 accuracy, consistency, and auditability of outputs – areas where naive use of LMs could falter. A fundamental issue is 
@@ -109,22 +140,27 @@ or recommendation, who is the author? If an inspector asks "Who wrote this devia
 "Uh, the chatbot did," that's a problem. Conventional systems log user IDs and actions, whereas many AI services do not 
 inherently provide an audit trail of their decision process. As Phoebe Clough (a Qualified Person and GxP consultant) noted, 
 "GxP environments require robust audit trails... If an inspector asks, 'Who wrote this CAPA?' and the answer is 'ChatGPT,' 
-you're in trouble." We must be able to trace and verify the source of GMP records – a chatbot's output cannot be a black box. 
-Data integrity also extends to accuracy and completeness of information. A known pitfall of LMs is they sometimes fabricate 
+you're in trouble." We must be able to trace and verify the source of GMP records – a chatbot's output cannot be a black box.
+
+Data Integrity also extends to accuracy and completeness of information. A known pitfall of LMs is they sometimes fabricate 
 information (often termed "hallucination"). The model might confidently present something that isn't actually in the 
 underlying data. For instance, it might concoct a plausible-sounding explanation or cite a requirement that doesn't exist. 
 Pete, a GMP compliance expert, warned that "assuming the accuracy of chatbot outputs is a disaster in the making – in my 
 opinion it is only a matter of time until the recalls and regulatory actions start" if companies trust AI answers without 
 verification. In an inspection, if an AI-driven system gave operators incorrect guidance (say, a wrong sterilization parameter 
 or a missed alarm condition) and it went uncorrected, the consequences could be severe. Therefore, inspectors will care: they 
-will ask how the company prevents AI misinformation from creeping into GMP decisions. **Regulatory expectation:** If a company 
+will ask how the company prevents AI misinformation from creeping into GMP decisions.
+
+Regulatory expectation: If a company 
 deploys a ChatGPT-like tool in a GMP process, they should treat it as a GxP computerized system. That means performing risk 
 assessments, validation (IQ/OQ/PQ), and putting controls in place to ensure it operates reliably within its intended use. In 
 fact, regulators have explicitly started scrutinizing use of AI. The FDA, EMA, MHRA and others expect firms to demonstrate that 
 such tools are fit for purpose, validated, and used under a quality management system. If the model is making any GMP-relevant 
 recommendations, the company must show how they ensure those recommendations are correct and compliant. Until AI models can be 
 fully deterministic and 100% trustworthy (a frontier researchers are just beginning to tackle), the onus is on us to implement 
-governance around them. In summary, regulators care because patient safety and data integrity are at stake. A language model 
+governance around them.
+
+In summary, regulators care because patient safety and data integrity are at stake. A language model 
 may be impressive technology, but without proper controls it can introduce errors, inconsistencies, or security risks in a 
 domain that cannot afford them. The rest of this article discusses how such an AI might be used in practice on a GMP installation 
 and how to distinguish a well-implemented solution from a poor one.

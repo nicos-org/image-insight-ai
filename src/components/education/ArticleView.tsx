@@ -1,10 +1,12 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useOutletContext } from "react-router-dom";
 import { educationArticles } from "@/content/educationArticles";
 import { ArticleBody } from "./ArticleBody";
 import { Button } from "@/components/ui/button";
+import type { EduTheme } from "@/pages/Education";
 
 export const ArticleView = () => {
   const { articleId } = useParams<{ articleId: string }>();
+  const { eduTheme } = useOutletContext<{ eduTheme: EduTheme }>();
   const article = educationArticles.find((a) => a.id === articleId);
 
   if (!article) {
@@ -24,7 +26,7 @@ export const ArticleView = () => {
         <h1 className="font-display text-3xl font-bold">{article.title}</h1>
         <p className="mt-6 text-muted-foreground">By Nicolas Löffler-Pérez on 16. Februar 2026</p>
       </header>
-      <ArticleBody content={article.content} />
+      <ArticleBody content={article.content} darkMode={eduTheme === "dark"} />
     </article>
   );
 };
