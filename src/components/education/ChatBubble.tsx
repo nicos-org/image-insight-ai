@@ -10,8 +10,8 @@ export const ChatBubble = ({ message, side = "left", className }: ChatBubbleProp
   const isRight = side === "right";
 
   return (
-    <div className={cn("not-prose my-4 flex", isRight ? "justify-end" : "justify-start", className)}>
-      <div className="relative inline-block max-w-[38rem] rounded-2xl border border-border bg-muted/40 px-4 py-3 text-sm text-foreground shadow-sm">
+    <div className={cn("not-prose my-12 flex", isRight ? "justify-end" : "justify-start", className)}>
+      <div className="relative inline-block max-w-[38rem] rounded-2xl border border-border bg-muted/40 px-4 py-6 text-sm text-foreground shadow-sm">
         <p className="m-0 leading-relaxed">{message}</p>
         <span
           aria-hidden="true"

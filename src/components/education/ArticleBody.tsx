@@ -20,12 +20,15 @@ interface ArticleBodyProps {
 }
 
 const WARNING_MARKER = "[!WARNING]";
+const TWO_CENTS_MARKER = "[!TWO_CENTS]";
 const CHAT_MARKER = "[!CHAT]";
 const CHAT_REPLY_MARKER = "[!CHAT_REPLY]";
 const CHAT_MARKERS = [CHAT_MARKER, CHAT_REPLY_MARKER] as const;
 const GEEK_MODE_STORAGE_KEY = "education_geek_mode";
 const LLM_DEEP_DIVE_URL =
   "https://medium.com/data-science-at-microsoft/how-large-language-models-work-91c362f5b78f";
+const ANNEX22_GUIDELINE_URL =
+  "https://www.gmp-navigator.com/files/guidemgr/mp_vol4_chap4_annex22_consultation_guideline_en.pdf";
 const RISK_WARNING_PREFIX = "depending on the complexity of the task given to the language model";
 
 const extractText = (node: React.ReactNode): string => {
@@ -102,6 +105,7 @@ export const ArticleBody = ({
     blockquote: ({ children, ...props }) => {
       const text = extractText(children).trim();
       const isWarning = text.startsWith(WARNING_MARKER);
+      const isTwoCents = text.startsWith(TWO_CENTS_MARKER);
       const chatSegments = parseChatSegments(text);
 
       if (isWarning) {
@@ -149,6 +153,64 @@ export const ArticleBody = ({
         );
       }
 
+      if (isTwoCents) {
+        const twoCentsText = text.slice(TWO_CENTS_MARKER.length).trim();
+        const secondParagraphStart = "A second, more subtle layer..:";
+        const secondParagraphIndex = twoCentsText.indexOf(secondParagraphStart);
+        const firstParagraph =
+          secondParagraphIndex >= 0
+            ? twoCentsText.slice(0, secondParagraphIndex).trim()
+            : twoCentsText;
+        const secondParagraph =
+          secondParagraphIndex >= 0 ? twoCentsText.slice(secondParagraphIndex).trim() : "";
+
+        return (
+          <div className="not-prose my-8">
+            <Card
+              className={cn(
+                "overflow-hidden border-emerald-300/70",
+                "bg-gradient-to-br from-emerald-100 via-green-50 to-card"
+              )}
+            >
+              <CardContent className="p-0">
+                <div className="border-b border-emerald-300/60 px-5 py-3">
+                  <Badge className="bg-emerald-700 text-white hover:bg-emerald-700">
+                    My Two Cents
+                  </Badge>
+                </div>
+                <div className="space-y-4 px-5 py-5 md:px-6 md:py-6">
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wide text-emerald-700/90">
+                      Expert Lens
+                    </p>
+                    <h3 className="mt-1 font-display text-xl font-semibold leading-tight text-emerald-900 md:text-2xl">
+                      Machine Learning Practitioner Note
+                    </h3>
+                  </div>
+                  <div className="space-y-3">
+                    <p className="text-sm text-emerald-900/90">{firstParagraph}</p>
+                    {secondParagraph ? (
+                      <p className="text-sm text-emerald-900/90">{secondParagraph}</p>
+                    ) : null}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="outline" className="border-emerald-400 text-emerald-800">
+                      ML Expert
+                    </Badge>
+                    <Badge variant="outline" className="border-emerald-400 text-emerald-800">
+                      GMP
+                    </Badge>
+                    <Badge variant="outline" className="border-emerald-400 text-emerald-800">
+                      Practical
+                    </Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        );
+      }
+
       if (baseBlockquote) {
         return React.createElement(baseBlockquote as React.ElementType, props, children);
       }
@@ -163,8 +225,23 @@ export const ArticleBody = ({
           href.includes(
             "medium.com/data-science-at-microsoft/how-large-language-models-work"
           ));
+      const isAnnex22Guideline =
+        typeof href === "string" &&
+        (href === ANNEX22_GUIDELINE_URL ||
+          href.includes("mp_vol4_chap4_annex22_consultation_guideline_en.pdf"));
 
-      if (isLlmDeepDive) {
+      if (isLlmDeepDive || isAnnex22Guideline) {
+        const cardTitle = isAnnex22Guideline
+          ? "Draft EU GMP Annex 22 - Artificial Intelligence"
+          : "How Large Language Models Work";
+        const cardDescription = isAnnex22Guideline
+          ? "Read the consultation guideline on how AI should be validated and governed in GMP environments."
+          : "Understand what happens inside an LLM, not just how to prompt it.";
+        const cardCtaLabel = isAnnex22Guideline ? "Read Annex 22 Draft" : "Read the Deep Dive";
+        const cardAriaLabel = isAnnex22Guideline
+          ? "Read the Annex 22 consultation guideline PDF (opens in a new tab)"
+          : "Read the deep dive article on Medium (opens in a new tab)";
+
         if (!isGeekMode) {
           return (
             <div
@@ -210,26 +287,37 @@ export const ArticleBody = ({
                       Deep Dive
                     </p>
                     <h3 className="mt-1 font-display text-xl font-semibold leading-tight md:text-2xl">
-                      How Large Language Models Work
+                      {cardTitle}
                     </h3>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Understand what happens inside an LLM, not just how to prompt it.
+                    {cardDescription}
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline">Medium</Badge>
-                    <Badge variant="outline">Microsoft</Badge>
-                    <Badge variant="outline">12 min</Badge>
-                    <Badge variant="outline">Intermediate</Badge>
+                    {isAnnex22Guideline ? (
+                      <>
+                        <Badge variant="outline">PDF</Badge>
+                        <Badge variant="outline">EU GMP</Badge>
+                        <Badge variant="outline">Draft</Badge>
+                        <Badge variant="outline">Advanced</Badge>
+                      </>
+                    ) : (
+                      <>
+                        <Badge variant="outline">Medium</Badge>
+                        <Badge variant="outline">Microsoft</Badge>
+                        <Badge variant="outline">12 min</Badge>
+                        <Badge variant="outline">Intermediate</Badge>
+                      </>
+                    )}
                   </div>
                   <Button asChild className="w-full sm:w-auto">
                     <a
                       href={href}
                       target="_blank"
                       rel="noreferrer noopener"
-                      aria-label="Read the deep dive article on Medium (opens in a new tab)"
+                      aria-label={cardAriaLabel}
                     >
-                      Read the Deep Dive
+                      {cardCtaLabel}
                     </a>
                   </Button>
                 </div>

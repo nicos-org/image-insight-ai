@@ -8,13 +8,7 @@ export const educationArticles: EducationArticle[] = [
   {
     id: "chatgpt-like-app-gmp-environments",
     title: "Understanding a ChatGPT-like App in GMP Environments – Do We Care?",
-    content: `## Backlog Plan Items
-
-7. In the section **How to Recognize a ChatGPT-like Application** under **Natural Language Chat Interface**, add a rendered chat-like message bubble at the bottom with: "What where the last batch's autoclave Parameters?".
-8. Under **Human-like Responses**, append rendered chat-like message bubbles at the end of the paragraph with:
-   - "what were the last batch's autoclave Parameters?"
-   - "Great question! The last batch's autoclave Parameters were P=1ATM; T=145 C; time=35 minutes, would you like me to adjust These Parameters?"
-9. Under **Flexibility in Queries**, append a rendered chat-like message bubble with "what was the Temperatur profile on Feb 2nd?" and then include an embedded mock SQL code section that demonstrates how the data would be pulled from an imaginary table.
+    content: `
 
 ## Introduction
 
@@ -40,7 +34,8 @@ When you interact with ChatGPT, you're seeing an LM complete your sentences or a
 it learned from vast data. 
 
 > [!WARNING]
-> Importantly, language models don't "think" or retrieve information the way a database or search engine does – they generate responses by statistical prediction. This means they can produce information that sounds convincing.
+> Importantly, language models don't "think" or retrieve information the way a database or search engine does – 
+they generate responses by statistical prediction. This means they can produce information that sounds convincing.
 
 [Deep Dive: How Large Language Models Work](https://medium.com/data-science-at-microsoft/how-large-language-models-work-91c362f5b78f)
 
@@ -50,7 +45,10 @@ users to query equipment data or SOPs in natural language. The LM is typically o
 (with a user interface, business logic, databases, etc.), rather than a stand-alone system.
 
 > [!WARNING]
-> Depending on the complexity of the Task given to the Language Model (LM) or Large Language Model (LLM) is how we estimate risk on the Task. Not only do we Account for the complexity of the Task, but also how was this developed. Is this an isolated component that can be thoroughly tested? or is this in the middle of a larger piece of software. This also influence our estimation of Risk.
+> Depending on the complexity of the task given to the Language Model (LM) or Large Language Model (LLM) is how we 
+ estimate risk on the task. Not only do we account for the complexity of the task, but also how was this developed. 
+ Is this an isolated component that can be thoroughly tested? or is this in the middle of a larger piece of software. 
+ This also influence our estimation of risk.
 
 ## How to Recognize a ChatGPT-like Application
 
@@ -73,7 +71,8 @@ completed 20 cycles last week, all within the validated temperature range," wher
 of cycle data and leave the interpretation to the user.
 
 > [!CHAT] what were the last batch's autoclave Parameters?
-> [!CHAT_REPLY] Great question! The last batch's autoclave Parameters were P=1ATM; T=145 C; time=35 minutes, would you like me to adjust These Parameters?
+> [!CHAT_REPLY] Great question! The last batch's autoclave Parameters were P=1ATM; T=145 C; time=35 minutes, would you like 
+ me to adjust these Parameters?
 
 - **Flexibility in Queries:** Language models can handle a variety of inputs – you might notice the system doesn't require 
 exact commands. Whether you ask "Show me yesterday's autoclave readings" or "What was the temperature profile on Feb 2nd?" 
@@ -90,10 +89,8 @@ WHERE DATE(recorded_at) = '2026-02-02'
 ORDER BY recorded_at ASC;
 ~~~
 
-- **AI or Assistant Branding:** Sometimes the presence of an LM is hinted by branding or naming. Terms like "AI Assistant," 
-"Powered by AI," "Chatbot," or even a cutesy name for the assistant (e.g. "Smart QA Helper") in the application are strong 
-clues. The system might also provide usage tips like "Ask me anything about the machine" or display an avatar – again 
-pointing to an AI-driven component.
+- **AI or Assistant Branding:** Labels like "AI Assistant," "Powered by AI," "Chatbot," or names like "Smart QA Helper" are 
+strong LM clues. Prompts such as "Ask me anything about the machine" or an assistant avatar are signs too.
 
 - **Non-deterministic or Creative Outputs:** This is more subtle to spot, but if you notice that repeated queries yield 
 slightly different answers or wording, it indicates an LM. Traditional coded algorithms are deterministic (the same input 
@@ -101,8 +98,7 @@ gives the same output every time). Large language models, on the other hand, oft
 generation. For example, ask twice "How many batches failed last month?" – a pure database query tool would always return 
 the same fixed number or list. An AI chatbot might say "None of the batches in January failed; all met quality criteria." 
 another time it might phrase it "All batches in January were within specifications, so there were zero failures." The core 
-fact is the same, but the wording varies. This variability is a hallmark of generative LMs. (Note: such non-determinism 
-is actually a red flag in regulated environments because consistency of outputs is expected – more on that later.)
+fact is the same, but the wording varies. This variability is a hallmark of generative LMs. 
 
 - **Complex Language Understanding:** An LM can handle complex or context-dependent questions. For instance, "Is there 
 anything in the autoclave log that looks unusual?" is a pretty high-level prompt. If the system attempts to interpret this
@@ -126,28 +122,50 @@ aspects like defining the model's intended use, ensuring quality of training dat
 human oversight. In other words, the rules are evolving, but the direction is clear: if you use an AI in GMP, you must 
 manage it with the same rigor as any other critical system.
 
+[Draft Annex 22: Artificial Intelligence (Consultation Guideline PDF)](https://www.gmp-navigator.com/files/guidemgr/mp_vol4_chap4_annex22_consultation_guideline_en.pdf)
+
 Even before explicit AI guidelines are finalized, existing 
 computerized system regulations and data integrity principles already apply. For example, FDA's 21 CFR Part 11 and EU 
 Annex 11 require that electronic records and software used in GMP processes are trustworthy and reliable. This includes 
-accuracy, consistency, and auditability of outputs – areas where naive use of LMs could falter. A fundamental issue is 
-that large language models are probabilistic, not deterministic. As one expert bluntly put it, current LLMs "produce 
-different answers every time" to the same prompt, a non-determinism that clashes with the reproducibility required by 
+accuracy, consistency, and auditability of outputs – **areas where naive use of LMs could falter. A fundamental issue is 
+that large language models are probabilistic, not deterministic.** 
+
+As one expert bluntly put it, current LLMs "produce different answers every time" to the same prompt, a non-determinism that clashes with the reproducibility required by 
 GMP standards. If a chatbot generates five slightly different versions of a report from identical input data, how do you 
 validate which one is "correct"? In regulated manufacturing, identical inputs should yield identical outputs – a benchmark 
-that typical free-form AI might not meet. Another critical concern is **data integrity and traceability**. GMP requires 
+that typical free-form AI might not meet. 
+
+> [!TWO_CENTS] Large Language Models are fundamentally deterministic mathematical systems. Given identical model weights, 
+identical input tokens, identical numerical precision, identical hardware/software stack, and identical decoding configuration, 
+the forward pass of a neural network produces identical logits. The variability often observed in practice is not inherent 
+to the model itself but introduced deliberately through sampling strategies such as temperature, top-k, or top-p decoding. 
+Temperature rescales the output distribution before sampling; when temperature is set to 0 (greedy decoding), the 
+highest-probability token is always selected, resulting in deterministic and reproducible outputs. In other words, what 
+is often described as “LLM non-determinism” is typically a configurable design choice optimized for creativity in consumer 
+applications—not a fundamental property of the underlying model. In regulated environments, reproducibility can be enforced 
+by disabling stochastic sampling, fixing seeds, locking model versions, and controlling deployment configurations.
+A second, more subtle layer..: Neural networks rely on floating-point 
+arithmetic, which is not perfectly associative; small rounding differences can arise depending on hardware (CPU vs GPU), 
+parallel execution order, reduced precision formats (FP16, BF16, INT8), or non-deterministic CUDA kernels. In very large 
+models performing billions of operations, these tiny numerical differences can occasionally propagate and influence token 
+selection. This phenomenon is well known in high-performance computing and is documented, for example, in the PyTorch 
+Reproducibility Notes, which state that fully reproducible results are not guaranteed across platforms or hardware configurations. 
+Importantly, this is not “AI randomness” but standard numerical behavior in large-scale computation. Therefore, ensuring 
+reproducibility in GMP contexts is primarily a systems engineering and validation challenge—requiring controlled hardware, 
+fixed precision settings, deterministic kernels, and validated inference environments—rather than a limitation inherent to 
+machine learning itself..
+
+Another critical concern is **data integrity and traceability**. GMP requires 
 that we know who recorded data or made a decision, and that records are attributable. If an AI assistant prepares a summary 
 or recommendation, who is the author? If an inspector asks "Who wrote this deviation report response?" and the answer is 
 "Uh, the chatbot did," that's a problem. Conventional systems log user IDs and actions, whereas many AI services do not 
-inherently provide an audit trail of their decision process. As Phoebe Clough (a Qualified Person and GxP consultant) noted, 
-"GxP environments require robust audit trails... If an inspector asks, 'Who wrote this CAPA?' and the answer is 'ChatGPT,' 
-you're in trouble." We must be able to trace and verify the source of GMP records – a chatbot's output cannot be a black box.
+inherently provide an audit trail of their decision process. We must be able to trace and verify the source of GMP records 
+– a chatbot's output cannot be a black box.
 
 Data Integrity also extends to accuracy and completeness of information. A known pitfall of LMs is they sometimes fabricate 
 information (often termed "hallucination"). The model might confidently present something that isn't actually in the 
 underlying data. For instance, it might concoct a plausible-sounding explanation or cite a requirement that doesn't exist. 
-Pete, a GMP compliance expert, warned that "assuming the accuracy of chatbot outputs is a disaster in the making – in my 
-opinion it is only a matter of time until the recalls and regulatory actions start" if companies trust AI answers without 
-verification. In an inspection, if an AI-driven system gave operators incorrect guidance (say, a wrong sterilization parameter 
+In an inspection, if an AI-driven system gave operators incorrect guidance (say, a wrong sterilization parameter 
 or a missed alarm condition) and it went uncorrected, the consequences could be severe. Therefore, inspectors will care: they 
 will ask how the company prevents AI misinformation from creeping into GMP decisions.
 
@@ -167,15 +185,38 @@ and how to distinguish a well-implemented solution from a poor one.
 
 ## Scenario Context: A Chatbot for an Autoclave – What's Going On?
 
-Let's put this into a concrete scenario. Imagine you're touring a pharmaceutical manufacturing facility and you stop by the equipment for terminal sterilization – an industrial autoclave. The operator isn't flipping through binders or scrolling a PLC screen; instead, they have a chat window open on a console. They type: "Show me the last two batch cycles and check if all parameters were in spec," and the system responds in a conversational way:
+Let's put this into a concrete scenario. Imagine you're touring a pharmaceutical manufacturing facility and you stop by the 
+equipment for terminal sterilization – an industrial autoclave. The operator isn't flipping through binders or scrolling a 
+PLC screen; instead, they have a chat window open on a console. They type: "Show me the last two batch cycles and check if 
+all parameters were in spec," and the system responds in a conversational way:
 
-*"Cycles 105 and 106 (Feb 1, 2026): Both completed successfully. Cycle 105 had a peak temperature of 122.0°C and pressure of 2.5 bar, and Cycle 106 had a peak temperature of 121.8°C at 2.5 bar. All values are within the validated range for sterilization. No anomalies or alarms were recorded. Both batches meet the required sterilization parameters."*
+*"Cycles 105 and 106 (Feb 1, 2026): Both completed successfully. Cycle 105 had a peak temperature of 122.0°C and pressure 
+of 2.5 bar, and Cycle 106 had a peak temperature of 121.8°C at 2.5 bar. All values are within the validated range for 
+sterilization. No anomalies or alarms were recorded. Both batches meet the required sterilization parameters."*
 
-They then ask, "Remind me what the SOP says about loading configurations," and the chatbot dutifully replies with a summary of the autoclave loading procedure from the manual. This feels like science fiction meeting GMP reality – the operator is literally chatting with the machine and its documentation.
+They then ask, "Remind me what the SOP says about loading configurations," and the chatbot dutifully replies with a summary 
+of the autoclave loading procedure from the manual. This feels like science fiction meeting GMP reality – the operator is 
+literally chatting with the machine and its documentation.
 
-[Example of a chat-based assistant interface](https://www.koerber-pharma.com/en/solutions/software/pas-x-kai) integrated into a pharma manufacturing system. Such an AI-driven chat UI allows operators to query equipment data or SOP documents in natural language and receive instant answers.
+[Example of a chat-based assistant interface](https://www.koerber-pharma.com/en/solutions/software/pas-x-kai) integrated 
+into a pharma manufacturing system. Such an AI-driven chat UI allows operators to query equipment data or SOP documents in 
+natural language and receive instant answers.
 
-**What's happening under the hood?** In this hypothetical system, the manufacturer has integrated a language model (a ChatGPT-like AI) into the autoclave's electronic record system. The application has access to two main data sources: (1) the autoclave's process data logs (e.g. those CSV files containing each cycle's details: times, temperatures, pressures, any alarms) and (2) the autoclave's documentation (user manual, operating SOP, perhaps maintenance records). The chatbot component is designed to let the operator retrieve information from these sources quickly by simply asking questions. It's like having an intelligent assistant that knows the machine's "memory" and "instructions." From an operational standpoint, this could offer real benefits: The operator can quickly confirm if a cycle was within spec without manually cross-checking each data point. They can get guidance on procedures without thumbing through a manual – which might reduce human error (no more "I couldn't find the info, so I guessed" situations). It can also speed up troubleshooting; for example, asking "What does error code 7 mean?" could immediately pull up the relevant manual section that says error 7 is a pressure sensor fault and suggests checking the seal. In a busy manufacturing setting, saving minutes on each query and ensuring accurate info is retrieved can add up to efficiency gains. However, from a compliance and inspection perspective, this scenario raises important questions. The chatbot is effectively interpreting GMP data and controlled documents on the fly. We need to ensure it's doing that correctly and safely:
+**What's happening under the hood?** In this hypothetical system, the manufacturer has integrated a language 
+model (a ChatGPT-like AI) into the autoclave's electronic record system. The application has access to two main 
+data sources: (1) the autoclave's process data logs (e.g. those CSV files containing each cycle's details: 
+times, temperatures, pressures, any alarms) and (2) the autoclave's documentation (user manual, operating SOP, 
+perhaps maintenance records). The chatbot component is designed to let the operator retrieve information from 
+these sources quickly by simply asking questions. It's like having an intelligent assistant that knows the machine's 
+"memory" and "instructions." From an operational standpoint, this could offer real benefits: The operator can 
+quickly confirm if a cycle was within spec without manually cross-checking each data point. They can get guidance 
+on procedures without thumbing through a manual – which might reduce human error (no more "I couldn't find the 
+info, so I guessed" situations). It can also speed up troubleshooting; for example, asking "What does error 
+code 7 mean?" could immediately pull up the relevant manual section that says error 7 is a pressure sensor fault 
+and suggests checking the seal. In a busy manufacturing setting, saving minutes on each query and ensuring accurate 
+info is retrieved can add up to efficiency gains. However, from a compliance and inspection perspective, this scenario 
+raises important questions. The chatbot is effectively interpreting GMP data and controlled documents on the fly. 
+We need to ensure it's doing that correctly and safely:
 
 - **Accuracy:** Is the chatbot reliably pulling the correct data from those CSV files? If Cycle 105 actually had a temperature excursion, would it correctly report it? Or could it potentially misread or miscalculate something? If it summarizes an SOP, is it faithful to the source or paraphrasing incorrectly?
 - **Completeness:** When asked about spec compliance, does it check all relevant parameters? (Perhaps the question only mentioned temperature and pressure, but what about time or F0 value? A human might forget to ask, and would the AI volunteer that information if it's critical?) A robust system might proactively include any out-of-spec detail in its answer, whereas a weaker one might overlook it because the question didn't explicitly ask.

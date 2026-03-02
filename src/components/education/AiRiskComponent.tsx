@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
-import { cn } from "@/lib/utils";
-
 const APP_MIN_SIZE = 200;
 const APP_MAX_SIZE = 500;
 const APP_DEFAULT_SIZE = 300;
 const AI_MIN_SIZE = 60;
 const AI_DEFAULT_SIZE = 120;
+const REL_EXPONENT = 1.3;
+const OBJ_START = 0.35;
+const OBJ_END = 0.5;
+const RISK_LOW_THRESHOLD = 0.33;
+const RISK_MED_THRESHOLD = 0.66;
 const GRID_SIZE = 320;
 const AI_SIZE_OFFSET = 20;
 const CHART_TOP_GUTTER = 8;
@@ -25,6 +28,12 @@ interface DragState {
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
+
+const smoothstep = (start: number, end: number, value: number) => {
+  if (end <= start) return value >= end ? 1 : 0;
+  const t = clamp((value - start) / (end - start), 0, 1);
+  return t * t * (3 - 2 * t);
+};
 
 const getLevel = (percent: number) => {
   if (percent < 0.33) return 0;
@@ -90,9 +99,19 @@ export const AiRiskComponent = () => {
   }, [dragState, maxAiSize]);
 
   const appPercent = (appSize - APP_MIN_SIZE) / (APP_MAX_SIZE - APP_MIN_SIZE);
-  const aiPercent = (aiSize - AI_MIN_SIZE) / Math.max(1, appSize - AI_MIN_SIZE);
+  const aiRel = (aiSize - AI_MIN_SIZE) / Math.max(1, appSize - AI_MIN_SIZE);
+  const aiObj = (aiSize - AI_MIN_SIZE) / (APP_MAX_SIZE - AI_MIN_SIZE);
   const yLevel = getLevel(appPercent);
-  const xLevel = getLevel(aiPercent);
+
+  // We now have two risk meters:
+  // 1) relScore -> "AI is big compared to its app"
+  // 2) objScore -> "AI is big in absolute terms"
+  // Final rule: take whichever is more dangerous.
+  const relScore = Math.pow(clamp(aiRel, 0, 1), REL_EXPONENT);
+  const objScore = smoothstep(OBJ_START, OBJ_END, aiObj);
+  const combinedScore = Math.max(relScore, objScore);
+  const xLevel =
+    combinedScore < RISK_LOW_THRESHOLD ? 0 : combinedScore < RISK_MED_THRESHOLD ? 1 : 2;
 
   const riskColor = getRiskColor(xLevel, yLevel);
 
