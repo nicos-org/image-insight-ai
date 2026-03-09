@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { AiRiskComponent } from "@/components/education/AiRiskComponent";
 import { ChatBubble } from "@/components/education/ChatBubble";
+import { MermaidDiagram } from "@/components/education/MermaidDiagram";
 import { AlertTriangle } from "lucide-react";
 
 interface ArticleBodyProps {
@@ -81,6 +82,8 @@ export const ArticleBody = ({
 }: ArticleBodyProps) => {
   const baseBlockquote = components?.blockquote;
   const baseLink = components?.a;
+  const basePre = components?.pre;
+  const baseCode = components?.code;
   const [isGeekMode, setIsGeekMode] = useState(false);
 
   useEffect(() => {
@@ -102,6 +105,37 @@ export const ArticleBody = ({
 
   const markdownComponents: React.ComponentProps<typeof ReactMarkdown>["components"] = {
     ...components,
+    pre: ({ children, ...props }) => {
+      const firstChild = React.Children.toArray(children)[0];
+
+      if (React.isValidElement(firstChild)) {
+        const className =
+          typeof firstChild.props?.className === "string" ? firstChild.props.className : "";
+        const isMermaidBlock = className.includes("language-mermaid");
+
+        if (isMermaidBlock) {
+          const chart = extractText(firstChild.props?.children).trim();
+          return <MermaidDiagram chart={chart} darkMode={darkMode} />;
+        }
+      }
+
+      if (basePre) {
+        return React.createElement(basePre as React.ElementType, props, children);
+      }
+
+      return <pre {...props}>{children}</pre>;
+    },
+    code: ({ children, className, ...props }) => {
+      if (baseCode) {
+        return React.createElement(baseCode as React.ElementType, { className, ...props }, children);
+      }
+
+      return (
+        <code className={className} {...props}>
+          {children}
+        </code>
+      );
+    },
     blockquote: ({ children, ...props }) => {
       const text = extractText(children).trim();
       const isWarning = text.startsWith(WARNING_MARKER);

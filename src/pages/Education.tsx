@@ -70,12 +70,17 @@ const Education = () => {
 
       {unlocked ? (
         <>
-          <div className="flex-1 flex flex-col min-h-0 pt-16">
+          <div className="h-dvh flex flex-col min-h-0 overflow-hidden pt-16">
             <ResizablePanelGroup
               direction="horizontal"
-              className="flex-1 min-h-0"
+              className="flex-1 min-h-0 overflow-hidden"
             >
-              <ResizablePanel defaultSize={25} minSize={20} maxSize={40}>
+              <ResizablePanel
+                defaultSize={25}
+                minSize={20}
+                maxSize={40}
+                className="min-h-0"
+              >
                 <div className="flex flex-col h-full border-r border-border/50 bg-background">
                   <div className="flex items-center justify-between gap-2 p-4 border-b border-border/50 shrink-0">
                     <span className="font-display font-semibold">
@@ -108,8 +113,8 @@ const Education = () => {
                 </div>
               </ResizablePanel>
               <ResizableHandle withHandle />
-              <ResizablePanel defaultSize={75} minSize={50}>
-                <div className="h-full overflow-hidden p-6 md:p-8 bg-background">
+              <ResizablePanel defaultSize={75} minSize={50} className="min-h-0">
+                <div className="h-full min-h-0 overflow-hidden p-6 md:p-8 bg-background">
                   <Outlet context={{ eduTheme }} />
                 </div>
               </ResizablePanel>

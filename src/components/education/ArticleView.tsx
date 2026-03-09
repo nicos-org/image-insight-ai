@@ -21,7 +21,7 @@ export const ArticleView = () => {
   }
 
   return (
-    <article className="h-full overflow-auto px-4 md:px-6">
+    <article className="h-full min-h-0 overflow-y-auto px-4 md:px-6">
       <header className="mt-28 mb-20 text-center">
         <h1 className="font-display text-3xl font-bold">{article.title}</h1>
         <p className="mt-6 text-muted-foreground">By Nicolas Löffler-Pérez on 16. Februar 2026</p>

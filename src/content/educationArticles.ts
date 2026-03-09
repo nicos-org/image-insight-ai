@@ -112,7 +112,9 @@ model-driven application. As inspectors, recognizing this is the first step to e
 ## Why Should Regulators Care About LMs in GMP?
 
 You might wonder: if an AI chatbot is just answering questions, not actually manufacturing anything, is it really a GMP 
-compliance concern? **Absolutely.**
+compliance concern? 
+
+**Absolutely.**
 
 Any tool that assists in making decisions or handling GMP data can impact product 
 quality and patient safety, so it falls under regulatory expectations for control and validation. Regulators worldwide 
@@ -130,10 +132,12 @@ Annex 11 require that electronic records and software used in GMP processes are 
 accuracy, consistency, and auditability of outputs – **areas where naive use of LMs could falter. A fundamental issue is 
 that large language models are probabilistic, not deterministic.** 
 
-As one expert bluntly put it, current LLMs "produce different answers every time" to the same prompt, a non-determinism that clashes with the reproducibility required by 
-GMP standards. If a chatbot generates five slightly different versions of a report from identical input data, how do you 
-validate which one is "correct"? In regulated manufacturing, identical inputs should yield identical outputs – a benchmark 
-that typical free-form AI might not meet. 
+As one expert bluntly put it, current LLMs "produce different answers every time" to the same prompt, 
+a non-determinism that clashes with the reproducibility required by GMP standards. If a chatbot 
+generates five slightly different versions of a report from identical input data, how do you 
+validate which one is "correct"? In regulated manufacturing, identical inputs should yield identical 
+outputs – a benchmark that typical free-form AI might not meet. Now this is not entirely true. This is 
+mostly a perception created by chatgpt/claud/gemini among others.
 
 > [!TWO_CENTS] Large Language Models are fundamentally deterministic mathematical systems. Given identical model weights, 
 identical input tokens, identical numerical precision, identical hardware/software stack, and identical decoding configuration, 
@@ -187,16 +191,20 @@ and how to distinguish a well-implemented solution from a poor one.
 
 Let's put this into a concrete scenario. Imagine you're touring a pharmaceutical manufacturing facility and you stop by the 
 equipment for terminal sterilization – an industrial autoclave. The operator isn't flipping through binders or scrolling a 
-PLC screen; instead, they have a chat window open on a console. They type: "Show me the last two batch cycles and check if 
-all parameters were in spec," and the system responds in a conversational way:
+PLC screen; instead, they have a chat window open on a console. They type and the system responds in a conversational way
 
-*"Cycles 105 and 106 (Feb 1, 2026): Both completed successfully. Cycle 105 had a peak temperature of 122.0°C and pressure 
-of 2.5 bar, and Cycle 106 had a peak temperature of 121.8°C at 2.5 bar. All values are within the validated range for 
-sterilization. No anomalies or alarms were recorded. Both batches meet the required sterilization parameters."*
+> [!CHAT] Show me the last two batch cycles and check if all parameters were in spec,
 
-They then ask, "Remind me what the SOP says about loading configurations," and the chatbot dutifully replies with a summary 
-of the autoclave loading procedure from the manual. This feels like science fiction meeting GMP reality – the operator is 
-literally chatting with the machine and its documentation.
+> [!CHAT_REPLY] Cycles 105 and 106 (Feb 1, 2026): Both completed successfully. Cycle 105 had a peak 
+ temperature of 122.0°C and pressure of 2.5 bar, and Cycle 106 had a peak temperature of 121.8°C at 
+ 2.5 bar. All values are within the validated range for sterilization. No anomalies or alarms were 
+ recorded. Both batches meet the required sterilization parameters.
+
+They then ask, 
+
+"Remind me what the SOP says about loading configurations," and the chatbot dutifully replies with a 
+summary of the autoclave loading procedure from the manual. This feels like science fiction meeting 
+GMP reality – the operator is literally chatting with the machine and its documentation.
 
 [Example of a chat-based assistant interface](https://www.koerber-pharma.com/en/solutions/software/pas-x-kai) integrated 
 into a pharma manufacturing system. Such an AI-driven chat UI allows operators to query equipment data or SOP documents in 
@@ -217,6 +225,21 @@ and suggests checking the seal. In a busy manufacturing setting, saving minutes 
 info is retrieved can add up to efficiency gains. However, from a compliance and inspection perspective, this scenario 
 raises important questions. The chatbot is effectively interpreting GMP data and controlled documents on the fly. 
 We need to ensure it's doing that correctly and safely:
+
+~~~mermaid
+flowchart LR
+  OP[Operator] --> UI[Chat UI]
+  UI --> ORCH[Query Orchestrator]
+  ORCH --> RET[Retriever]
+  RET --> LOGS[(Autoclave Process Logs)]
+  RET --> DOCS[(Approved SOP and Manual)]
+  ORCH --> LLM[Language Model]
+  LLM --> RESP[Response Composer]
+  RESP --> UI
+  ORCH --> CTRL[Validation and Scope Controls]
+  RESP --> CITES[Source References and Citations]
+  UI --> AUDIT[(Audit Trail)]
+~~~
 
 - **Accuracy:** Is the chatbot reliably pulling the correct data from those CSV files? If Cycle 105 actually had a temperature excursion, would it correctly report it? Or could it potentially misread or miscalculate something? If it summarizes an SOP, is it faithful to the source or paraphrasing incorrectly?
 - **Completeness:** When asked about spec compliance, does it check all relevant parameters? (Perhaps the question only mentioned temperature and pressure, but what about time or F0 value? A human might forget to ask, and would the AI volunteer that information if it's critical?) A robust system might proactively include any out-of-spec detail in its answer, whereas a weaker one might overlook it because the question didn't explicitly ask.
