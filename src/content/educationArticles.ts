@@ -283,6 +283,8 @@ Now, let's look at the other side: how might a chatGPT-like app be deployed in a
 
 In summary, a poor implementation is characterized by lack of control: no clear boundaries on the AI's knowledge or use, no proper validation/testing, no audit trails, and no respect for data integrity fundamentals. It often stems from either overconfidence in the AI or a lack of understanding of regulatory requirements. During an inspection, these weaknesses would manifest as the company being unable to answer detailed questions about how the AI works, how it was tested, or how its output is governed.
 
+> [!GOOD_BAD_SUMMARY]
+
 ## Inspector's Checklist: Evaluating an AI Chatbot on Site
 
 If you encounter a ChatGPT-like system in a GMP environment, here are some practical steps and questions to help you assess it. This checklist can guide you in identifying whether the implementation aligns with good practices or if there are glaring issues:

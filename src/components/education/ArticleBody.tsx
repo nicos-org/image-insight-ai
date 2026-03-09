@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { AiRiskComponent } from "@/components/education/AiRiskComponent";
+import { GoodBadSummaryPanel } from "@/components/education/GoodBadSummaryPanel";
 import { ChatBubble } from "@/components/education/ChatBubble";
 import { MermaidDiagram } from "@/components/education/MermaidDiagram";
 import { AlertTriangle } from "lucide-react";
@@ -22,6 +23,7 @@ interface ArticleBodyProps {
 
 const WARNING_MARKER = "[!WARNING]";
 const TWO_CENTS_MARKER = "[!TWO_CENTS]";
+const GOOD_BAD_SUMMARY_MARKER = "[!GOOD_BAD_SUMMARY]";
 const CHAT_MARKER = "[!CHAT]";
 const CHAT_REPLY_MARKER = "[!CHAT_REPLY]";
 const CHAT_MARKERS = [CHAT_MARKER, CHAT_REPLY_MARKER] as const;
@@ -140,6 +142,7 @@ export const ArticleBody = ({
       const text = extractText(children).trim();
       const isWarning = text.startsWith(WARNING_MARKER);
       const isTwoCents = text.startsWith(TWO_CENTS_MARKER);
+      const isGoodBadSummary = text.startsWith(GOOD_BAD_SUMMARY_MARKER);
       const chatSegments = parseChatSegments(text);
 
       if (isWarning) {
@@ -243,6 +246,10 @@ export const ArticleBody = ({
             </Card>
           </div>
         );
+      }
+
+      if (isGoodBadSummary) {
+        return <GoodBadSummaryPanel />;
       }
 
       if (baseBlockquote) {
