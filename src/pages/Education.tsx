@@ -11,17 +11,20 @@ import {
   ResizableHandle,
 } from "@/components/ui/resizable";
 import { educationArticles } from "@/content/educationArticles";
+import { educationArticlesDe } from "@/content/educationArticles.de";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/education/ThemeToggle";
 
 const EDUCATION_STORAGE_KEY = "education_unlocked";
 const EDUCATION_THEME_KEY = "education_theme";
+const EDUCATION_LANGUAGE_KEY = "education_language";
 const DEFAULT_PASSWORD = "inspectra2025";
 
 const getExpectedPassword = () =>
   import.meta.env.VITE_EDUCATION_PASSWORD ?? DEFAULT_PASSWORD;
 
 export type EduTheme = "dark" | "light";
+export type EduLanguage = "en" | "de";
 
 const Education = () => {
   const [unlocked, setUnlocked] = useState(
@@ -32,6 +35,11 @@ const Education = () => {
   const [eduTheme, setEduTheme] = useState<EduTheme>(
     () => (localStorage.getItem(EDUCATION_THEME_KEY) as EduTheme) || "dark"
   );
+  const [eduLanguage, setEduLanguage] = useState<EduLanguage>(
+    () => (localStorage.getItem(EDUCATION_LANGUAGE_KEY) as EduLanguage) || "en"
+  );
+
+  const articles = eduLanguage === "de" ? educationArticlesDe : educationArticles;
 
   const handleToggleTheme = () => {
     setEduTheme((prev) => {
@@ -48,7 +56,7 @@ const Education = () => {
       sessionStorage.setItem(EDUCATION_STORAGE_KEY, "true");
       setUnlocked(true);
     } else {
-      setError("Incorrect password.");
+      setError(eduLanguage === "de" ? "Falsches Passwort." : "Incorrect password.");
     }
   };
 
@@ -65,6 +73,12 @@ const Education = () => {
       )}
     >
       <Navbar
+        showLanguageSelect
+        language={eduLanguage}
+        onLanguageChange={(language) => {
+          setEduLanguage(language);
+          localStorage.setItem(EDUCATION_LANGUAGE_KEY, language);
+        }}
         actions={<ThemeToggle theme={eduTheme} onToggle={handleToggleTheme} />}
       />
 
@@ -84,15 +98,15 @@ const Education = () => {
                 <div className="flex flex-col h-full border-r border-border/50 bg-background">
                   <div className="flex items-center justify-between gap-2 p-4 border-b border-border/50 shrink-0">
                     <span className="font-display font-semibold">
-                      Articles
+                      {eduLanguage === "de" ? "Artikel" : "Articles"}
                     </span>
                     <Button variant="outline" size="sm" onClick={handleLogout}>
-                      Log out
+                      {eduLanguage === "de" ? "Abmelden" : "Log out"}
                     </Button>
                   </div>
                   <ScrollArea className="flex-1">
                     <nav className="p-2 space-y-0.5">
-                      {educationArticles.map((article) => (
+                      {articles.map((article) => (
                         <NavLink
                           key={article.id}
                           to={`/education/${article.id}`}
@@ -115,7 +129,7 @@ const Education = () => {
               <ResizableHandle withHandle />
               <ResizablePanel defaultSize={75} minSize={50} className="min-h-0">
                 <div className="h-full min-h-0 overflow-hidden p-6 md:p-8 bg-background">
-                  <Outlet context={{ eduTheme }} />
+                  <Outlet context={{ eduTheme, eduLanguage }} />
                 </div>
               </ResizablePanel>
             </ResizablePanelGroup>
@@ -126,12 +140,12 @@ const Education = () => {
           <div className="max-w-md mx-auto pt-16">
             <section className="glass-card rounded-2xl p-8 border border-border/50">
               <h2 className="font-display text-2xl font-semibold text-foreground mb-4 text-center">
-                Enter password
+                {eduLanguage === "de" ? "Passwort eingeben" : "Enter password"}
               </h2>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <Input
                   type="password"
-                  placeholder="Password"
+                  placeholder={eduLanguage === "de" ? "Passwort" : "Password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoFocus
@@ -141,7 +155,7 @@ const Education = () => {
                   <p className="text-sm text-destructive">{error}</p>
                 )}
                 <Button type="submit" variant="hero" className="w-full">
-                  Submit
+                  {eduLanguage === "de" ? "Bestätigen" : "Submit"}
                 </Button>
               </form>
             </section>

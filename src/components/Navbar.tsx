@@ -2,13 +2,29 @@ import { ReactNode } from "react";
 import { Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface NavbarProps {
   className?: string;
   actions?: ReactNode;
+  showLanguageSelect?: boolean;
+  language?: "en" | "de";
+  onLanguageChange?: (language: "en" | "de") => void;
 }
 
-export const Navbar = ({ className, actions }: NavbarProps) => {
+export const Navbar = ({
+  className,
+  actions,
+  showLanguageSelect = false,
+  language = "en",
+  onLanguageChange,
+}: NavbarProps) => {
   return (
     <nav className={cn("fixed top-0 left-0 right-0 z-50 glass-card border-b border-border/50", className)}>
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
@@ -53,6 +69,19 @@ export const Navbar = ({ className, actions }: NavbarProps) => {
             Education
           </Link>
           {actions}
+          {showLanguageSelect ? (
+            <div className="w-[86px] shrink-0">
+              <Select value={language} onValueChange={(value: "en" | "de") => onLanguageChange?.(value)}>
+                <SelectTrigger aria-label="Select language" className="h-9">
+                  <SelectValue placeholder="EN" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="en">EN</SelectItem>
+                  <SelectItem value="de">DE</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          ) : null}
         </div>
       </div>
     </nav>

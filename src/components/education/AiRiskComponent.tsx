@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import type { EduLanguage } from "@/pages/Education";
 const APP_MIN_SIZE = 200;
 const APP_MAX_SIZE = 500;
 const APP_DEFAULT_SIZE = 300;
@@ -57,7 +58,12 @@ const getRiskColor = (xLevel: number, yLevel: number) => {
   return mapping[`${xLevel}-${yLevel}`] ?? "#33cc66";
 };
 
-export const AiRiskComponent = () => {
+interface AiRiskComponentProps {
+  language?: EduLanguage;
+}
+
+export const AiRiskComponent = ({ language = "en" }: AiRiskComponentProps) => {
+  const isDe = language === "de";
   const [appSize, setAppSize] = useState(APP_DEFAULT_SIZE);
   const [aiSize, setAiSize] = useState(AI_DEFAULT_SIZE);
   const [dragState, setDragState] = useState<DragState | null>(null);
@@ -146,8 +152,9 @@ export const AiRiskComponent = () => {
   return (
     <section className="not-prose my-6 rounded-xl border border-border/70 bg-card p-4 md:p-6">
       <p className="mb-4 text-sm text-muted-foreground">
-        Drag the bottom-right handles to explore how software dependency and task complexity
-        change AI risk.
+        {isDe
+          ? "Bewegen Sie die Anfasser unten rechts, um zu sehen, wie Software-Abhängigkeit und Aufgabenkomplexität das KI-Risiko verändern."
+          : "Drag the bottom-right handles to explore how software dependency and task complexity change AI risk."}
       </p>
 
       <div className="flex flex-col items-center">
@@ -156,7 +163,9 @@ export const AiRiskComponent = () => {
           style={{ gridTemplateColumns: `120px ${appSize}px 120px` }}
         >
           <div className="relative mx-auto flex h-24 w-24 items-center justify-center border border-border/80 bg-muted text-xs font-semibold text-foreground sm:h-28 sm:w-28">
-            <span className="absolute left-2 top-1.5 text-[11px] font-bold">User</span>
+            <span className="absolute left-2 top-1.5 text-[11px] font-bold">
+              {isDe ? "Nutzer" : "User"}
+            </span>
           </div>
 
           <div
@@ -164,16 +173,18 @@ export const AiRiskComponent = () => {
             style={{ width: `${appSize}px`, height: `${appSize}px`, backgroundColor: riskColor }}
           >
             <span className="absolute left-2 top-1.5 text-[11px] font-bold">
-              App / Software
+              {isDe ? "App / Software" : "App / Software"}
             </span>
             <div
               className="relative flex items-center justify-center border border-border/80 text-foreground"
               style={{ width: `${aiSize}px`, height: `${aiSize}px`, backgroundColor: riskColor }}
             >
-              <span className="absolute left-2 top-1.5 text-[11px] font-bold">AI Component</span>
+              <span className="absolute left-2 top-1.5 text-[11px] font-bold">
+                {isDe ? "KI-Komponente" : "AI Component"}
+              </span>
               <button
                 type="button"
-                aria-label="Resize AI component"
+                aria-label={isDe ? "KI-Komponente skalieren" : "Resize AI component"}
                 className="absolute -bottom-2 -right-2 h-3.5 w-3.5 cursor-nwse-resize border border-border bg-foreground/80"
                 onPointerDown={(event) => {
                   event.preventDefault();
@@ -187,7 +198,7 @@ export const AiRiskComponent = () => {
             </div>
             <button
               type="button"
-              aria-label="Resize app software box"
+              aria-label={isDe ? "App-Software-Box skalieren" : "Resize app software box"}
               className="absolute -bottom-2 -right-2 h-3.5 w-3.5 cursor-nwse-resize border border-border bg-foreground/80"
               onPointerDown={(event) => {
                 event.preventDefault();
@@ -202,11 +213,11 @@ export const AiRiskComponent = () => {
 
           <div className="relative mx-auto flex h-24 w-24 items-center justify-center border border-border/80 bg-muted text-center text-xs font-semibold text-foreground sm:h-28 sm:w-28">
             <span className="absolute left-2 top-1.5 text-[11px] font-bold">
-              Information
+              {isDe ? "Information" : "Information"}
               <br />
-              Insights
+              {isDe ? "Insights" : "Insights"}
               <br />
-              Data
+              {isDe ? "Daten" : "Data"}
             </span>
           </div>
         </div>
@@ -217,7 +228,11 @@ export const AiRiskComponent = () => {
             height={chartMetrics.svgHeight}
             viewBox={`0 0 ${chartMetrics.svgWidth} ${chartMetrics.svgHeight}`}
             role="img"
-            aria-label="AI risk matrix with axis labels and current risk point"
+            aria-label={
+              isDe
+                ? "KI-Risikomatrix mit Achsenbeschriftung und aktuellem Risikopunkt"
+                : "AI risk matrix with axis labels and current risk point"
+            }
           >
             <text
               x={chartMetrics.yTitleX}
@@ -228,10 +243,10 @@ export const AiRiskComponent = () => {
               className="fill-muted-foreground"
               fontSize="12"
             >
-              Software Dependency Risk
+              {isDe ? "Software-Abhängigkeitsrisiko" : "Software Dependency Risk"}
             </text>
 
-            {["high", "medium", "low"].map((label, index) => {
+            {(isDe ? ["hoch", "mittel", "niedrig"] : ["high", "medium", "low"]).map((label, index) => {
               const y = chartMetrics.plotY + (index + 0.5) * chartMetrics.cellSize;
               return (
                 <text
@@ -291,7 +306,7 @@ export const AiRiskComponent = () => {
               strokeWidth="2"
             />
 
-            {["low", "medium", "high"].map((label, index) => (
+            {(isDe ? ["niedrig", "mittel", "hoch"] : ["low", "medium", "high"]).map((label, index) => (
               <text
                 key={label}
                 x={chartMetrics.plotX + (index + 0.5) * chartMetrics.cellSize}
@@ -313,7 +328,7 @@ export const AiRiskComponent = () => {
               className="fill-muted-foreground"
               fontSize="12"
             >
-              Task Complexity Risk
+              {isDe ? "Risiko der Aufgabenkomplexität" : "Task Complexity Risk"}
             </text>
           </svg>
         </div>

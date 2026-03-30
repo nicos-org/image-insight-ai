@@ -20,6 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import type { EduLanguage } from "@/pages/Education";
 
 type ProfileId = "good" | "bad";
 
@@ -144,7 +145,11 @@ const toRiskLevel = (xCount: number, total: number) => {
   return Math.max(0, Math.min(5, Math.round((xCount / total) * 5)));
 };
 
-export const GoodBadSummaryPanel = () => {
+interface GoodBadSummaryPanelProps {
+  language?: EduLanguage;
+}
+
+export const GoodBadSummaryPanel = ({ language = "en" }: GoodBadSummaryPanelProps) => {
   const [selectedProfile, setSelectedProfile] = useState<ProfileId>("good");
   const [overrides, setOverrides] = useState<Partial<Record<string, boolean>>>({});
 
@@ -169,6 +174,24 @@ export const GoodBadSummaryPanel = () => {
   const riskPercent = (riskLevel / 5) * 100;
   const hasOverrides = Object.keys(overrides).length > 0;
   const riskCopy = RISK_COPY[riskLevel];
+  const isDe = language === "de";
+
+  const deRiskLabel: Record<number, string> = {
+    0: "0 - Kein Risiko",
+    1: "1 - Niedriges Risiko",
+    2: "2 - Kontrolliertes Risiko",
+    3: "3 - Mittleres Risiko",
+    4: "4 - Hohes Risiko",
+    5: "5 - Kritisches Risiko",
+  };
+  const deRiskSummary: Record<number, string> = {
+    0: "Kein Risiko. Wir können entspannt bleiben.",
+    1: "Niedriges Risiko. Normale Überwachung und periodische Checks beibehalten.",
+    2: "Kontrolliertes Risiko. Trends überwachen und kritische Antworten verifizieren.",
+    3: "Mittleres Risiko. Stichproben und Challenge-Tests erhöhen.",
+    4: "Hohes Risiko. Review eskalieren und Implementierungskontrollen prüfen.",
+    5: "Wir müssen JETZT inspizieren.",
+  };
 
   const handleProfileChange = (value: string) => {
     setSelectedProfile(value as ProfileId);
@@ -186,23 +209,27 @@ export const GoodBadSummaryPanel = () => {
       <Card className="overflow-hidden border-border/70">
         <CardHeader className="gap-3 border-b bg-muted/20">
           <div className="flex items-center justify-between gap-3">
-            <CardTitle className="text-xl">Good vs Bad Summary</CardTitle>
-            <Badge variant="outline">Inspector view</Badge>
+            <CardTitle className="text-xl">
+              {isDe ? "Zusammenfassung: Gut vs. Schlecht" : "Good vs Bad Summary"}
+            </CardTitle>
+            <Badge variant="outline">{isDe ? "Inspektionssicht" : "Inspector view"}</Badge>
           </div>
           <p className="text-sm text-muted-foreground">
-            Compare implementation quality fast, then simulate risk scenarios before the checklist.
+            {isDe
+              ? "Implementierungsqualität schnell vergleichen und Risikoszenarien vor der Checkliste simulieren."
+              : "Compare implementation quality fast, then simulate risk scenarios before the checklist."}
           </p>
         </CardHeader>
 
         <CardContent className="space-y-6 p-4 md:p-6">
           <div className="space-y-2">
             <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Good vs Bad Matrix
+              {isDe ? "Gut-vs.-Schlecht-Matrix" : "Good vs Bad Matrix"}
             </h3>
             <Table className="min-w-[780px]">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[180px]">Profile</TableHead>
+                  <TableHead className="w-[180px]">{isDe ? "Profil" : "Profile"}</TableHead>
                   {CRITERIA.map((criterion) => (
                     <TableHead
                       key={criterion.id}
@@ -222,13 +249,19 @@ export const GoodBadSummaryPanel = () => {
                     className="cursor-pointer"
                     onClick={() => handleProfileChange(profileId)}
                   >
-                    <TableCell className="font-medium">{PROFILE_LABELS[profileId]}</TableCell>
+                    <TableCell className="font-medium">
+                      {isDe
+                        ? profileId === "good"
+                          ? "Gute Implementierung"
+                          : "Schlechte Implementierung"
+                        : PROFILE_LABELS[profileId]}
+                    </TableCell>
                     {CRITERIA.map((criterion) => {
                       const ok = PROFILE_VALUES[profileId][criterion.id];
                       return (
                         <TableCell key={`${profileId}-${criterion.id}`} className="text-center text-lg">
                           <span
-                            aria-label={ok ? "yes" : "no"}
+                            aria-label={ok ? (isDe ? "ja" : "yes") : (isDe ? "nein" : "no")}
                             className={cn(ok ? "text-emerald-600" : "text-red-600")}
                           >
                             {ok ? "✅" : "❌"}
@@ -244,37 +277,47 @@ export const GoodBadSummaryPanel = () => {
 
           <div className={cn("space-y-4 rounded-xl border p-4 md:p-5", riskCopy.panelToneClass)}>
             <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Risk Calculator
+              {isDe ? "Risiko-Rechner" : "Risk Calculator"}
             </h3>
 
             <div className="grid gap-4 md:grid-cols-[260px_1fr]">
               <div className="space-y-2">
-                <p className="text-sm font-medium">Select baseline profile</p>
+                <p className="text-sm font-medium">
+                  {isDe ? "Basisprofil auswählen" : "Select baseline profile"}
+                </p>
                 <Select value={selectedProfile} onValueChange={handleProfileChange}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Choose profile" />
+                    <SelectValue placeholder={isDe ? "Profil auswählen" : "Choose profile"} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="good">{PROFILE_LABELS.good}</SelectItem>
-                    <SelectItem value="bad">{PROFILE_LABELS.bad}</SelectItem>
+                    <SelectItem value="good">
+                      {isDe ? "Gute Implementierung" : PROFILE_LABELS.good}
+                    </SelectItem>
+                    <SelectItem value="bad">
+                      {isDe ? "Schlechte Implementierung" : PROFILE_LABELS.bad}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-3">
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge className="bg-primary text-primary-foreground">Risk level: {riskCopy.label}</Badge>
-                  <Badge variant="outline">Checks: {checksCount}</Badge>
+                  <Badge className="bg-primary text-primary-foreground">
+                    {isDe ? "Risikostufe" : "Risk level"}: {isDe ? deRiskLabel[riskLevel] : riskCopy.label}
+                  </Badge>
+                  <Badge variant="outline">{isDe ? "Checks" : "Checks"}: {checksCount}</Badge>
                   <Badge variant="outline">X: {xCount}</Badge>
                 </div>
                 <Progress value={riskPercent} className="h-3" />
-                <p className="text-sm text-foreground">{riskCopy.summary}</p>
+                <p className="text-sm text-foreground">
+                  {isDe ? deRiskSummary[riskLevel] : riskCopy.summary}
+                </p>
               </div>
             </div>
 
             <div className="space-y-3 rounded-lg border border-border/60 bg-background/70 p-3 md:p-4">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-sm font-medium">What-if simulator</p>
+                <p className="text-sm font-medium">{isDe ? "What-if-Simulator" : "What-if simulator"}</p>
                 <Button
                   type="button"
                   size="sm"
@@ -282,7 +325,7 @@ export const GoodBadSummaryPanel = () => {
                   onClick={resetToSelectedProfile}
                   disabled={!hasOverrides}
                 >
-                  Reset to profile defaults
+                  {isDe ? "Auf Profilstandard zurücksetzen" : "Reset to profile defaults"}
                 </Button>
               </div>
               <div className="grid gap-2 md:grid-cols-2">

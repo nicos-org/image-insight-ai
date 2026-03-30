@@ -8,14 +8,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { AiRiskComponent } from "@/components/education/AiRiskComponent";
+import { Annex22ChecklistSection } from "@/components/education/Annex22ChecklistSection";
 import { GoodBadSummaryPanel } from "@/components/education/GoodBadSummaryPanel";
 import { ChatBubble } from "@/components/education/ChatBubble";
 import { MermaidDiagram } from "@/components/education/MermaidDiagram";
 import { AlertTriangle } from "lucide-react";
+import type { EduLanguage } from "@/pages/Education";
 
 interface ArticleBodyProps {
   content: string;
   darkMode?: boolean;
+  language?: EduLanguage;
   className?: string;
   /** Custom components for markdown elements (e.g. a, code, blockquote). */
   components?: React.ComponentProps<typeof ReactMarkdown>["components"];
@@ -24,6 +27,7 @@ interface ArticleBodyProps {
 const WARNING_MARKER = "[!WARNING]";
 const TWO_CENTS_MARKER = "[!TWO_CENTS]";
 const GOOD_BAD_SUMMARY_MARKER = "[!GOOD_BAD_SUMMARY]";
+const ANNEX22_CHECKLIST_MARKER = "[!ANNEX22_CHECKLIST]";
 const CHAT_MARKER = "[!CHAT]";
 const CHAT_REPLY_MARKER = "[!CHAT_REPLY]";
 const CHAT_MARKERS = [CHAT_MARKER, CHAT_REPLY_MARKER] as const;
@@ -79,6 +83,7 @@ const parseChatSegments = (text: string): ChatSegment[] => {
 export const ArticleBody = ({
   content,
   darkMode = false,
+  language = "en",
   className,
   components,
 }: ArticleBodyProps) => {
@@ -87,6 +92,7 @@ export const ArticleBody = ({
   const basePre = components?.pre;
   const baseCode = components?.code;
   const [isGeekMode, setIsGeekMode] = useState(false);
+  const isDe = language === "de";
 
   useEffect(() => {
     try {
@@ -143,6 +149,7 @@ export const ArticleBody = ({
       const isWarning = text.startsWith(WARNING_MARKER);
       const isTwoCents = text.startsWith(TWO_CENTS_MARKER);
       const isGoodBadSummary = text.startsWith(GOOD_BAD_SUMMARY_MARKER);
+      const isAnnex22Checklist = text.startsWith(ANNEX22_CHECKLIST_MARKER);
       const chatSegments = parseChatSegments(text);
 
       if (isWarning) {
@@ -163,7 +170,7 @@ export const ArticleBody = ({
             >
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle className={cn(darkMode && "text-amber-300 font-semibold")}>
-                Warning
+                {isDe ? "Warnung" : "Warning"}
               </AlertTitle>
               <AlertDescription
                 className={cn(darkMode && "text-foreground text-base leading-7")}
@@ -171,7 +178,7 @@ export const ArticleBody = ({
                 {warningText}
               </AlertDescription>
             </Alert>
-            {isRiskWarning && <AiRiskComponent />}
+            {isRiskWarning && <AiRiskComponent language={language} />}
           </>
         );
       }
@@ -212,16 +219,16 @@ export const ArticleBody = ({
               <CardContent className="p-0">
                 <div className="border-b border-emerald-300/60 px-5 py-3">
                   <Badge className="bg-emerald-700 text-white hover:bg-emerald-700">
-                    My Two Cents
+                    {isDe ? "Mein Kommentar" : "My Two Cents"}
                   </Badge>
                 </div>
                 <div className="space-y-4 px-5 py-5 md:px-6 md:py-6">
                   <div>
                     <p className="text-xs font-medium uppercase tracking-wide text-emerald-700/90">
-                      Expert Lens
+                      {isDe ? "Expertenperspektive" : "Expert Lens"}
                     </p>
                     <h3 className="mt-1 font-display text-xl font-semibold leading-tight text-emerald-900 md:text-2xl">
-                      Machine Learning Practitioner Note
+                      {isDe ? "Hinweis aus der ML-Praxis" : "Machine Learning Practitioner Note"}
                     </h3>
                   </div>
                   <div className="space-y-3">
@@ -232,13 +239,13 @@ export const ArticleBody = ({
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="outline" className="border-emerald-400 text-emerald-800">
-                      ML Expert
+                      {isDe ? "ML-Expertise" : "ML Expert"}
                     </Badge>
                     <Badge variant="outline" className="border-emerald-400 text-emerald-800">
                       GMP
                     </Badge>
                     <Badge variant="outline" className="border-emerald-400 text-emerald-800">
-                      Practical
+                      {isDe ? "Praxis" : "Practical"}
                     </Badge>
                   </div>
                 </div>
@@ -249,7 +256,11 @@ export const ArticleBody = ({
       }
 
       if (isGoodBadSummary) {
-        return <GoodBadSummaryPanel />;
+        return <GoodBadSummaryPanel language={language} />;
+      }
+
+      if (isAnnex22Checklist) {
+        return <Annex22ChecklistSection language={language} />;
       }
 
       if (baseBlockquote) {
@@ -292,10 +303,12 @@ export const ArticleBody = ({
               )}
             >
               <p className="text-sm font-medium text-foreground">
-                Want the technical deep dive?
+                {isDe ? "Technischen Deep Dive anzeigen?" : "Want the technical deep dive?"}
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Enable Geek Mode to reveal advanced reading recommendations.
+                {isDe
+                  ? "Aktiviere den Geek Mode, um fortgeschrittene Leseempfehlungen zu sehen."
+                  : "Enable Geek Mode to reveal advanced reading recommendations."}
               </p>
               <Button
                 type="button"
@@ -304,7 +317,7 @@ export const ArticleBody = ({
                 className="mt-3"
                 onClick={() => handleGeekModeToggle(true)}
               >
-                Enable Geek Mode
+                {isDe ? "Geek Mode aktivieren" : "Enable Geek Mode"}
               </Button>
             </div>
           );
@@ -320,12 +333,12 @@ export const ArticleBody = ({
             >
               <CardContent className="p-0">
                 <div className="border-b border-border/60 px-5 py-3">
-                  <Badge variant="secondary">For the Curious</Badge>
+                  <Badge variant="secondary">{isDe ? "Für Neugierige" : "For the Curious"}</Badge>
                 </div>
                 <div className="space-y-4 px-5 py-5 md:px-6 md:py-6">
                   <div>
                     <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                      Deep Dive
+                      {isDe ? "Deep Dive" : "Deep Dive"}
                     </p>
                     <h3 className="mt-1 font-display text-xl font-semibold leading-tight md:text-2xl">
                       {cardTitle}
@@ -404,13 +417,13 @@ export const ArticleBody = ({
         <div>
           <p className="text-sm font-semibold text-foreground">Geek Mode</p>
           <p id="geek-mode-description" className="text-xs text-muted-foreground">
-            Reveal advanced technical reading
+            {isDe ? "Fortgeschrittene technische Lektüre anzeigen" : "Reveal advanced technical reading"}
           </p>
         </div>
         <Switch
           checked={isGeekMode}
           onCheckedChange={handleGeekModeToggle}
-          aria-label="Toggle Geek Mode"
+          aria-label={isDe ? "Geek Mode umschalten" : "Toggle Geek Mode"}
           aria-describedby="geek-mode-description"
         />
       </div>
